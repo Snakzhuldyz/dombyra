@@ -1,0 +1,1011 @@
+<!doctype html><html lang="kk"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0c1a25"><link rel="apple-touch-icon" href="icon-192.png"></head><body><title>Домбыра этюды</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Mono&family=PT+Sans:wght@400;700&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: steppe-night single theme. A faint dombyra drawn behind the page; cards stack in lesson order:
+   chat with the teacher (voice like WhatsApp) -> dombyra neck showing where to press -> number notation -> self-check */
+:root{
+  --bg:#0c1a25; --bg2:#102435; --card:#13283a; --card2:#183249; --line:#26445d;
+  --ink:#f3ecdc; --muted:#a2b5c3; --wood:#d9984c; --wood2:#9a6431; --woodl:#f0c58c;
+  --sky:#3fc1cf; --skyink:#062227; --gold:#e8c46a; --rec:#ff5c61;
+  --ok:#72dc93; --okbg:#173b2b; --bad:#ff8072; --badbg:#3d1f22;
+  --me:#0f4a4e; --teach:#1b354c;
+  --f-display:"Rubik",system-ui,sans-serif; --f-body:"PT Sans",system-ui,sans-serif; --f-mono:"PT Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+html{scroll-padding-bottom:110px}
+body{overflow-x:hidden;font-family:var(--f-body);font-size:16px;line-height:1.45;padding:0 16px;background:radial-gradient(1200px 700px at 85% -10%,#173650 0%,transparent 60%),radial-gradient(900px 600px at -10% 110%,#1d2f24 0%,transparent 60%),var(--bg);background-attachment:fixed;min-height:100%}
+.bgdomb{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bgdomb svg{position:absolute;right:-12vh;top:-6vh;height:130vh;width:auto;transform:rotate(24deg);opacity:.075}
+.wrap{position:relative;z-index:1;overflow-x:clip;max-width:900px;margin:0 auto;padding-block:20px 140px;display:flex;flex-direction:column;gap:18px}
+/* hero */
+.hero{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding-top:8px}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(32px,8vw,56px);line-height:1;margin:0;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--wood)}
+.hero p{margin:12px 0 0;color:var(--muted);max-width:52ch;font-size:17px}
+.facts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.facts span{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:4px 11px;color:var(--woodl);background:color-mix(in srgb,var(--card) 70%,transparent)}
+.hero-art{width:150px;transform:rotate(18deg);filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
+@media (max-width:620px){.hero{grid-template-columns:1fr}.hero-art{display:none}.hero p{font-size:15px}.chat{max-height:300px}}
+.orn{height:22px;width:100%;color:var(--gold);opacity:.55;display:block}
+/* cards */
+.card{background:color-mix(in srgb,var(--card) 92%,transparent);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px;backdrop-filter:blur(3px)}
+.card-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.card-h h2{font-family:var(--f-display);font-weight:700;font-size:21px;margin:0;flex:1;min-width:0}
+.step{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;background:var(--wood);color:#2a1606;flex:none}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--bg2);gap:2px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:14px;border:none;background:transparent;color:var(--muted);padding:6px 13px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sky);color:var(--skyink);font-weight:700}
+.btn{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:12px;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.btn.primary{background:var(--sky);border-color:var(--sky);color:var(--skyink)}
+.btn.wood{background:var(--wood);border-color:var(--wood);color:#2a1606}
+.btn.danger{background:var(--rec);border-color:var(--rec);color:#fff}
+.btn.big{padding:13px 20px;font-size:17px;border-radius:14px}
+.btn.sm{padding:5px 10px;font-size:14px;border-radius:9px}
+.btn:disabled{opacity:.45;cursor:default}
+.btn svg{width:18px;height:18px}
+button:focus-visible,.col:focus-visible,label.btn:focus-within{outline:3px solid var(--gold);outline-offset:2px}
+/* chat (WhatsApp-like) */
+.chat{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding:12px;border-radius:14px;background:
+  linear-gradient(color-mix(in srgb,var(--bg) 82%,transparent),color-mix(in srgb,var(--bg) 82%,transparent)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='44' viewBox='0 0 80 44'%3E%3Cg fill='none' stroke='%23e8c46a' stroke-opacity='.22' stroke-width='2'%3E%3Cpath d='M40 40V16M40 16C30 5 14 7 14 19c0 8 10 10 12 3 1-4-3-6-5-3M40 16c10-11 26-9 26 3 0 8-10 10-12 3-1-4 3-6 5-3'/%3E%3C/g%3E%3C/svg%3E")}
+.m{display:flex;gap:8px;align-items:flex-end;max-width:88%}
+.m.me{align-self:flex-end;flex-direction:row-reverse}
+.ava{width:34px;height:34px;border-radius:50%;background:var(--wood);display:grid;place-items:center;flex:none}
+.ava svg{width:20px;height:26px}
+.bub{background:var(--teach);border-radius:14px 14px 14px 4px;padding:9px 12px;min-width:0;box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.m.me .bub{background:var(--me);border-radius:14px 14px 4px 14px}
+.bub .who{font-size:12px;font-weight:700;color:var(--wood);margin-bottom:2px}
+.bub .tm{font-size:11px;color:var(--muted);text-align:right;margin-top:3px}
+.bub .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.bub.warn{box-shadow:inset 3px 0 0 var(--rec)}
+.voice{display:flex;align-items:center;gap:10px;min-width:220px}
+.vplay{width:38px;height:38px;border-radius:50%;border:none;background:var(--sky);color:var(--skyink);display:grid;place-items:center;cursor:pointer;flex:none}
+.vplay svg{width:18px;height:18px}
+.vbars{display:flex;align-items:center;gap:2px;height:30px;flex:1;min-width:0}
+.vbars i{flex:1;min-width:2px;max-width:4px;background:color-mix(in srgb,var(--ink) 45%,transparent);border-radius:2px}
+.vbars i.p{background:var(--sky)}
+.vdur{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.vname{font-size:12px;color:var(--muted);margin-top:2px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* composer */
+.composer{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 8px;user-select:none;-webkit-user-select:none;touch-action:none}
+.cbtn{width:42px;height:42px;border-radius:50%;border:none;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;flex:none}
+.cbtn svg{width:22px;height:22px}
+.hint{flex:1;min-width:0;color:var(--muted);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mic{width:54px;height:54px;border-radius:50%;border:none;background:var(--sky);color:var(--skyink);display:grid;place-items:center;cursor:pointer;flex:none;touch-action:none;transition:transform .15s}
+.mic svg{width:26px;height:26px}
+.mic.on{background:var(--rec);color:#fff;transform:scale(1.15)}
+.recline{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--rec);animation:blink 1s infinite;flex:none}
+@keyframes blink{50%{opacity:.25}}
+.rtime{font-family:var(--f-mono);font-size:15px;flex:none}
+.rwave{flex:1;min-width:40px;height:30px}
+.slide{font-size:13px;color:var(--muted);white-space:nowrap;flex:none}
+@media (max-width:460px){.slide{display:none}}
+/* teacher neck */
+.now{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.nowname{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;color:var(--woodl);min-width:110px}
+.nowwhere{font-size:16px}
+.nowwhere b{color:var(--gold)}
+.nowstroke{text-align:center;font-family:var(--f-display)}
+.nowstroke .arrow{font-size:40px;line-height:1;color:var(--sky);display:block}
+.nowstroke .sc{font-size:13px;color:var(--muted)}
+@media (max-width:520px){.nowname{font-size:34px;min-width:80px}.now{gap:10px}}
+.neckwrap{overflow-x:auto;border-radius:14px;background:var(--bg2);border:1px solid var(--line)}
+.neckwrap svg{display:block;min-width:760px;width:100%;height:auto}
+.vib{animation:vib .45s linear}
+@keyframes vib{0%,100%{transform:translateY(0)}10%{transform:translateY(-3px)}20%{transform:translateY(3px)}30%{transform:translateY(-2.4px)}40%{transform:translateY(2.4px)}55%{transform:translateY(-1.5px)}70%{transform:translateY(1.2px)}85%{transform:translateY(-.6px)}}
+@media (prefers-reduced-motion:reduce){.vib{animation:none}.dot{animation:none}}
+.mk-dot{transition:transform .12s}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input[type=range]{accent-color:var(--sky);flex:1;min-width:140px}
+.tval{font-family:var(--f-mono);min-width:66px}
+details.settings{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg2)}
+details.settings summary{cursor:pointer;font-weight:700;color:var(--woodl)}
+.setgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.setgrid>div{display:flex;flex-direction:column;gap:7px;min-width:0}
+@media (max-width:560px){.setgrid{grid-template-columns:1fr}}
+.lbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.tog{font-size:15px;display:flex;align-items:center;gap:7px;cursor:pointer}
+.tog input{accent-color:var(--sky);width:18px;height:18px}
+/* vertical stage (phones) */
+.stage{display:none;position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(#0a1620,#102435);border:1px solid var(--line)}
+.stage canvas{display:block;width:100%;height:100%}
+.stage .sbtns{position:absolute;bottom:10px;left:10px;display:flex;gap:8px}
+.sbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:color-mix(in srgb,var(--bg2) 85%,transparent);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.sbtn.pl{background:var(--wood);border-color:var(--wood);color:#2a1606}
+.sbtn svg{width:20px;height:20px}
+.stage:fullscreen{height:100vh!important;border-radius:0;border:none}
+.stage{display:block;height:min(80vh,760px);min-height:480px}.neckwrap{display:none!important}
+/* tablature */
+.tabinfo{font-size:14px;color:var(--muted)}
+.tabscroll{overflow-x:auto;background:#f6efe1;border-radius:14px;padding:14px 12px;color:#1d2a30}
+.tab{display:flex;flex-wrap:wrap;row-gap:20px}
+.bar{display:flex;border-left:2px solid #1d2a30;position:relative}
+.bar:last-child{border-right:2px solid #1d2a30}
+.barno{position:absolute;top:-4px;left:4px;font-size:10px;color:#6b7a80;font-family:var(--f-mono)}
+.col{display:grid;grid-template-rows:20px 26px 26px 20px 30px;width:var(--w);cursor:pointer;border-radius:6px;--cb:#f6efe1;background:var(--cb)}
+.col:hover{--cb:#ece2cc}
+.col.ok{--cb:#d6efdc}
+.col.bad{--cb:#f8d7d3;box-shadow:inset 0 -3px 0 #c43b30}
+.col.miss{--cb:#f8d7d3;box-shadow:inset 0 0 0 1.5px #c43b30}
+.col.now{--cb:#bfe6ea}
+.col.sel{outline:2px dashed #a8730f;outline-offset:-2px}
+.col.flash{animation:flash 1.4s ease 2}
+@keyframes flash{0%,100%{--cb:#f6efe1}40%{--cb:#ffe08a}}
+/* teacher assistant */
+.assist{position:fixed;right:16px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;align-items:center;gap:8px;border:1px solid var(--wood);background:color-mix(in srgb,var(--bg2) 92%,transparent);color:var(--woodl);font:inherit;font-weight:700;padding:6px 14px 6px 6px;border-radius:999px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4);backdrop-filter:blur(6px)}
+.assist .ava{width:36px;height:36px}
+.assist:hover{background:var(--card2)}
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(4,10,15,.55);display:flex;align-items:flex-end;justify-content:center;padding:0 10px}
+.sheet-in{width:100%;max-width:640px;max-height:80vh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-bottom:none;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px;box-shadow:0 -10px 40px rgba(0,0,0,.5)}
+.sheet-h{display:flex;gap:10px;align-items:center}
+.sheet-h>div:nth-child(2){flex:1;min-width:0}
+.sheet-h b{font-family:var(--f-display);font-size:18px}
+.sugs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.sugs li{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:var(--bg2);border:1px solid var(--line)}
+.sugs li input{accent-color:var(--sky);width:20px;height:20px;margin-top:2px;flex:none}
+.sugs .tx{flex:1;min-width:0}
+.sugs .tx b{color:var(--woodl)}
+.sugs .why{font-size:13px;color:var(--muted)}
+.sugs .go{flex:none}
+.tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{flex:1;font:inherit;font-size:14px;font-weight:700;border:none;background:transparent;color:var(--muted);padding:8px 6px;border-radius:9px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--sky);color:var(--skyink)}
+.pn{display:flex;flex-direction:column;gap:12px}
+.fretpick{overflow-x:auto;border-radius:12px;background:linear-gradient(90deg,#5a3517,#8a5629 50%,#5a3517);padding:8px}
+.frow{display:flex;gap:4px;align-items:center;min-width:max-content}
+.frow+.frow{margin-top:6px}
+.frow .sl{width:44px;font-size:12px;font-weight:700;color:#f0c58c;flex:none}
+.fb{width:36px;height:36px;border-radius:8px;border:1px solid rgba(233,214,176,.5);background:rgba(12,26,37,.35);color:#f6efe1;font:700 15px var(--f-mono);cursor:pointer;flex:none}
+.fb:active{background:var(--wood);color:#2a1606}
+.fb.open{background:rgba(63,193,207,.3)}
+.mseq{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;padding:8px;border-radius:12px;background:#f6efe1;color:#14212a}
+.mseq .mc{font:700 13px var(--f-mono);padding:4px 8px;border-radius:8px;background:#ece2cc}
+.mseq .mc.rest{color:#6b7a80}
+.mseq .empty{color:#6b7a80;font-size:14px}
+.ytbox{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.ytbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.field{font:inherit;color:var(--ink);background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0}
+textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:vertical;width:100%;box-sizing:border-box}
+.sugs li.ok{background:var(--okbg);border-color:transparent;color:var(--ok);font-weight:700}
+.fg{font-family:var(--f-mono);font-size:12px;color:#a2650a;text-align:center;padding-top:4px;font-weight:700}
+.str{position:relative;display:grid;place-items:center}
+.str::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1.5px solid #6b7a80}
+.str b{position:relative;font-family:var(--f-mono);font-size:17px;background:var(--cb);padding:0 3px;line-height:1;color:#14212a}
+.str b.out{color:#c43b30}
+.nm{font-size:11px;text-align:center;color:#55656c;white-space:nowrap;overflow:hidden}
+.stk{display:flex;flex-direction:column;align-items:center;line-height:1}
+.cnt{font-family:var(--f-display);font-weight:800;font-size:15px;color:#0b7470}
+.ar{font-size:11px;color:#55656c;letter-spacing:-1px}
+.rest .cnt{color:#8a979c;font-weight:500}
+.editor{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px;border:1px dashed var(--gold);border-radius:12px}
+.editor .what{font-weight:700;margin-right:6px;color:var(--woodl)}
+/* check */
+.steps{margin:0;padding-left:20px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.result{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.score{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.stars{font-size:34px;letter-spacing:3px;color:var(--gold);line-height:1}
+.stars .off{color:var(--line)}
+.scoretxt{font-family:var(--f-display);font-weight:700;font-size:21px}
+.keys{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.keys i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+.mist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.mist li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:11px;border-radius:12px;background:var(--badbg)}
+.mist .t{min-width:0;flex:1 1 220px}
+.mist .t b{color:var(--bad)}
+.mist li.good{background:var(--okbg);color:var(--ok);font-weight:700}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 20px;font-size:14px;margin:0}
+.legend dt{font-weight:700;color:var(--woodl)}
+.legend dd{margin:0;color:var(--muted)}
+.k{font-family:var(--f-mono);color:var(--gold);font-weight:700}
+/* player */
+.player{position:fixed;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--bg2) 94%,transparent);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:5}
+.player .in{max-width:900px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.play{width:54px;height:54px;border-radius:50%;border:none;background:var(--wood);color:#2a1606;display:grid;place-items:center;cursor:pointer;flex:none}
+.play svg{width:24px;height:24px}
+.prog{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.track{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--wood)}
+.ptime{font-family:var(--f-mono);font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.count{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:6;background:rgba(6,14,20,.35)}
+.count span{font-family:var(--f-display);font-weight:800;font-size:min(42vw,230px);color:var(--wood)}
+.badge{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--rec);color:#fff;font-weight:700;padding:7px 16px;border-radius:999px;z-index:7;font-size:14px;display:flex;gap:8px;align-items:center}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gWood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7a95c"/><stop offset=".55" stop-color="#b8743a"/><stop offset="1" stop-color="#7c4a1f"/></linearGradient>
+    <linearGradient id="gNeck" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5a3517"/><stop offset=".5" stop-color="#8a5629"/><stop offset="1" stop-color="#5a3517"/></linearGradient>
+    <symbol id="dombyra" viewBox="0 0 400 1200">
+      <path d="M176 18h48l8 120h-64z" fill="url(#gNeck)" stroke="#2c1a0a" stroke-width="3"/>
+      <g fill="#e8c46a" stroke="#2c1a0a" stroke-width="2"><circle cx="160" cy="50" r="11"/><circle cx="240" cy="50" r="11"/><circle cx="160" cy="98" r="11"/><circle cx="240" cy="98" r="11"/></g>
+      <rect x="180" y="138" width="40" height="560" fill="url(#gNeck)" stroke="#2c1a0a" stroke-width="3"/>
+      <g stroke="#e9d6b0" stroke-width="3">
+        <line x1="180" y1="200" x2="220" y2="200"/><line x1="180" y1="256" x2="220" y2="256"/><line x1="180" y1="308" x2="220" y2="308"/><line x1="180" y1="356" x2="220" y2="356"/><line x1="180" y1="400" x2="220" y2="400"/><line x1="180" y1="440" x2="220" y2="440"/><line x1="180" y1="477" x2="220" y2="477"/><line x1="180" y1="511" x2="220" y2="511"/><line x1="180" y1="542" x2="220" y2="542"/><line x1="180" y1="571" x2="220" y2="571"/><line x1="180" y1="598" x2="220" y2="598"/><line x1="180" y1="622" x2="220" y2="622"/><line x1="180" y1="645" x2="220" y2="645"/>
+      </g>
+      <path d="M200 640C330 690 382 880 362 1030C344 1150 266 1188 200 1188S56 1150 38 1030C18 880 70 690 200 640Z" fill="url(#gWood)" stroke="#2c1a0a" stroke-width="4"/>
+      <path d="M200 680C300 724 344 880 328 1020C314 1124 256 1156 200 1156" fill="none" stroke="#f2c98e" stroke-opacity=".35" stroke-width="6"/>
+      <g fill="#2c1a0a"><circle cx="200" cy="880" r="6"/><circle cx="184" cy="896" r="5"/><circle cx="216" cy="896" r="5"/><circle cx="200" cy="912" r="6"/><circle cx="184" cy="864" r="5"/><circle cx="216" cy="864" r="5"/></g>
+      <g fill="none" stroke="#2c1a0a" stroke-width="3" opacity=".7"><path d="M200 960c-14-14-36-10-36 6 0 10 12 12 14 4"/><path d="M200 960c14-14 36-10 36 6 0 10-12 12-14 4"/><path d="M200 960v28"/></g>
+      <rect x="160" y="1072" width="80" height="14" rx="4" fill="#3a2410"/>
+      <rect x="182" y="1112" width="36" height="34" rx="6" fill="#3a2410"/>
+      <g stroke="#f4ead6" stroke-width="2.2"><line x1="194" y1="40" x2="194" y2="1130"/><line x1="206" y1="40" x2="206" y2="1130"/></g>
+    </symbol>
+    <symbol id="horn" viewBox="0 0 80 44"><path d="M40 40V16M40 16C30 5 14 7 14 19c0 8 10 10 12 3 1-4-3-6-5-3M40 16c10-11 26-9 26 3 0 8-10 10-12 3-1-4 3-6 5-3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <pattern id="pHorn" width="60" height="22" patternUnits="userSpaceOnUse"><use href="#horn" width="60" height="22"/></pattern>
+  </defs>
+</svg>
+<div class="bgdomb" aria-hidden="true"><svg viewBox="0 0 400 1200"><use href="#dombyra"/></svg></div>
+
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <h1>Домбыра <em>этюды</em></h1>
+      <p>Әуенді айтып жібер, мен оны домбыраның цифрлық нотасына айналдырып, қай пернені қай саусақпен басу керегін көрсетемін. Сосын ойнап көр, қатеңді айтамын.</p>
+      <div class="facts"><span>19 перне</span><span>2 ішек</span><span>цифрлық нота</span><span>қағыс ↓↑</span></div>
+    </div>
+    <svg class="hero-art" viewBox="0 0 400 1200" aria-hidden="true"><use href="#dombyra"/></svg>
+  </header>
+  <svg class="orn" aria-hidden="true"><rect width="100%" height="22" fill="url(#pHorn)"/></svg>
+
+  <!-- 1. chat -->
+  <section class="card" aria-label="Әуенді жіберу">
+    <div class="card-h">
+      <span class="step">1</span><h2>Әуенді жібер</h2>
+      <div class="seg" id="durSeg" role="group" aria-label="Ұзақтығы"><button data-d="60">1 минут</button><button data-d="180">3 минут</button></div>
+    </div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <div class="composer" id="composer">
+      <div id="cIdle" style="display:contents">
+        <label class="cbtn" for="file" title="Аудио файл жіберу" aria-label="Аудио файл жіберу">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 11.5 12.5 20a5 5 0 0 1-7-7L14 4.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4L15.5 7.6"/></svg>
+        </label>
+        <input id="file" type="file" accept="audio/*,.opus,.ogg,.m4a,.mp3,.wav,.aac" hidden>
+        <span class="hint" id="hint">Басып тұрып әуенді айт, жіберу үшін жібер</span>
+      </div>
+      <div id="cRec" class="recline" hidden>
+        <button class="cbtn" id="binBtn" aria-label="Бас тарту"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button>
+        <span class="dot"></span><span class="rtime" id="rtime">0:00</span>
+        <canvas class="rwave" id="rwave" width="300" height="60"></canvas>
+        <span class="slide" id="slideHint">‹ бас тарту үшін сырғыт</span>
+      </div>
+      <button class="mic" id="mic" aria-label="Басып тұрып жазу">
+        <svg id="micIco" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- 2. teacher neck -->
+  <section class="card" aria-label="Домбырада көрсету">
+    <div class="card-h"><span class="step">2</span><h2>Домбырада көрсетемін</h2></div>
+    <div class="now">
+      <div class="nowname" id="nowName">Ре</div>
+      <div class="nowwhere" id="nowWhere">Нотаны басып немесе ▶ батырмасын басып көр</div>
+      <div class="nowstroke"><span class="arrow" id="nowArrow">↓</span><span class="sc" id="nowSc">қағыс</span></div>
+    </div>
+    <div class="stage" id="stage"><canvas id="hw" aria-label="Тігінен тұрған домбыра және жанында цифрлық нота"></canvas>
+      <div class="sbtns"><button class="sbtn pl" id="sPlay" aria-label="Ойнату"><svg viewBox="0 0 24 24" fill="currentColor" id="sPlayIco"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="sbtn" id="fsBtn" aria-label="Толық экран"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div></div>
+    <div class="neckwrap" id="neckWrap"><svg id="neck" viewBox="0 0 1000 230" aria-label="Домбыра мойны"></svg></div>
+    <div class="row">
+      <div class="seg" id="tempoSeg" role="group" aria-label="Қарқын"><button data-t="60">Баяу</button><button data-t="90">Орташа</button><button data-t="120">Жылдам</button></div>
+      <input type="range" id="tempo" min="40" max="160" step="1" value="90" aria-label="Қарқын"><span class="tval" id="tempoVal">♩ = 90</span>
+    </div>
+    <details class="settings">
+      <summary>Баптаулар: күй, өлшем, тон</summary>
+      <div class="setgrid">
+        <div><span class="lbl">Домбыра күйі</span><div class="seg" id="tuneSeg"><button data-tune="kvarta">Кварта (ре–соль)</button><button data-tune="kvinta">Квинта (ре–ля)</button></div></div>
+        <div><span class="lbl">Өлшем</span><div class="seg" id="meterSeg"><button data-m="2">2/4</button><button data-m="3">3/4</button><button data-m="4">4/4</button></div></div>
+        <div><span class="lbl">Тон</span><div class="row"><button class="btn sm" id="dn">− жарты тон</button><button class="btn sm" id="up">+ жарты тон</button></div></div>
+        <div><span class="lbl">Дыбыс</span><label class="tog"><input type="checkbox" id="metro"> Метроном</label><label class="tog"><input type="checkbox" id="drone" checked> Екі ішекті бірге қағу</label><label class="tog"><input type="checkbox" id="loop"> Қайталап ойнату</label></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 3. tab -->
+  <section class="card" aria-label="Цифрлық нота">
+    <div class="card-h"><span class="step">3</span><h2>Цифрлық нота</h2><span class="muted small" id="srcLbl"></span></div>
+    <div class="tabinfo" id="strInfo"></div>
+    <div class="editor" id="editor" hidden>
+      <span class="what" id="edWhat"></span>
+      <button class="btn sm" data-ed="up">▲ Нота</button><button class="btn sm" data-ed="down">▼ Нота</button>
+      <button class="btn sm" data-ed="plus">Қағыс +</button><button class="btn sm" data-ed="minus">Қағыс −</button>
+      <button class="btn sm" data-ed="str">Ішекті ауыстыру</button><button class="btn sm" data-ed="del">Өшіру</button>
+      <button class="btn sm" data-ed="close">Дайын</button>
+    </div>
+    <div class="tabscroll"><div class="tab" id="tab"></div></div>
+    <span class="muted small">Нотаны бас: дыбысын естисің, домбырада қай жерде екенін көресің, қажет болса түзетесің.</span>
+  </section>
+
+  <!-- 4. self check -->
+  <section class="card" aria-label="Өзімді тексеру">
+    <div class="card-h"><span class="step">4</span><h2>Өзімді тексеру</h2></div>
+    <ol class="steps">
+      <li>Домбыраны күйге келтіріп, қолға ал.</li>
+      <li>«Өзімді тексеру» батырмасын бас. 3-2-1 деген соң метроном соғады.</li>
+      <li>Жарықтанған нотамен бірге ойна. Соңында қай жері қате екенін айтамын.</li>
+    </ol>
+    <div class="row">
+      <button class="btn wood big" id="checkBtn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><span id="checkLbl">Өзімді тексеру</span></button>
+      <label class="btn" for="checkFile">Ойынымды файлмен жүктеу</label>
+      <input id="checkFile" type="file" accept="audio/*,.opus,.ogg,.m4a,.mp3,.wav,.aac" hidden>
+    </div>
+    <label class="tog"><input type="checkbox" id="guide"> Әуенді қоса ойнат (тек құлаққаппен)</label>
+    <span class="muted small" id="cmsg">Файлмен тексергенде метрономға қарап, таңдалған қарқынмен ойна.</span>
+    <div class="result" id="result" hidden>
+      <div class="score"><span class="stars" id="stars"></span><span class="scoretxt" id="scoreTxt"></span></div>
+      <div id="myPlay"></div>
+      <div class="keys"><span><i style="background:#d6efdc"></i>дұрыс</span><span><i style="background:#f8d7d3;box-shadow:inset 0 -3px 0 #c43b30"></i>басқа нота естілді</span><span><i style="background:#f8d7d3;box-shadow:inset 0 0 0 1.5px #c43b30"></i>естілмеді</span></div>
+      <ul class="mist" id="mist"></ul>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Белгілер">
+    <div class="card-h"><h2>Белгілер</h2></div>
+    <dl class="legend">
+      <div><dt>Екі сызық</dt><dd>Жоғарғы сызық — жіңішке дыбысты ішек (соль немесе ля), төменгі — ре ішегі.</dd></div>
+      <div><dt>Сызықтағы сан</dt><dd>Перне нөмірі (1–19). <span class="k">0</span> — ішекті баспай, ашық қағу.</dd></div>
+      <div><dt>Сары сан</dt><dd>Сол қол саусағы: <span class="k">1</span> сұқ, <span class="k">2</span> ортан, <span class="k">3</span> аты жоқ, <span class="k">4</span> шынашақ.</dd></div>
+      <div><dt>Төменгі сан</dt><dd>Сол нотада неше қағыс. <span class="k">↓</span> қағу, <span class="k">↑</span> ілу.</dd></div>
+    </dl>
+    <span class="muted small">Пернелер жарты тон аралықпен есептелді (1 перне = ½ тон).</span>
+  </section>
+</div>
+
+<button class="assist" id="assistBtn" aria-label="Ұстаз көмегі: нотаны тексеріп, түзетуді ұсынады"><span class="ava"><svg viewBox="0 0 400 1200"><use href="#dombyra"/></svg></span><span>Ұстаз көмегі</span></button>
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Ұстаз ұсыныстары">
+  <div class="sheet-in">
+    <div class="sheet-h"><div class="ava"><svg viewBox="0 0 400 1200"><use href="#dombyra"/></svg></div><div><b>Ұстаз көмегі</b><div class="muted small">Нотаны тексеру, қолмен енгізу, YouTube-тан тыңдау</div></div>
+      <button class="cbtn" id="shClose" aria-label="Жабу"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="tabs" role="tablist"><button role="tab" data-pn="pnCheck" aria-selected="true">Тексеру</button><button role="tab" data-pn="pnManual" aria-selected="false">Қолмен енгізу</button><button role="tab" data-pn="pnYt" aria-selected="false">YouTube</button></div>
+    <div class="pn" id="pnCheck">
+      <div class="muted" id="shSum"></div>
+      <ul class="sugs" id="shList"></ul>
+      <div class="row"><button class="btn primary" id="shApply">Белгіленгендерді түзету</button><button class="btn" id="shCancel">Жабу</button></div>
+    </div>
+    <div class="pn" id="pnManual" hidden>
+      <span class="muted small">Ішек пен пернені бас: нота тізімге қосылады. Алдымен қағыс санын таңда.</span>
+      <div class="row"><span class="lbl">Қағыс</span><div class="seg" id="mCnt"><button data-c="1">1</button><button data-c="2" aria-pressed="true">2</button><button data-c="3">3</button><button data-c="4">4</button><button data-c="6">6</button><button data-c="8">8</button></div></div>
+      <div class="fretpick"><div class="frow" id="mHi"></div><div class="frow" id="mLo"></div></div>
+      <div class="row"><button class="btn sm" id="mRest">Үзіліс</button><button class="btn sm" id="mBack">⌫ Соңғысын өшіру</button><button class="btn sm" id="mClear">Тазалау</button><button class="btn sm" id="mLoad">Қазіргі нотаны жүктеу</button></div>
+      <div class="mseq" id="mSeq"></div>
+      <details class="settings"><summary>Мәтінмен жазу (мұғалімге)</summary>
+        <div class="muted small" style="margin:8px 0">Пішімі: <span class="k">р0</span> — Ре ішегі 0-перне, <span class="k">ж2</span> — жіңішке ішек 2-перне, <span class="k">*4</span> — 4 қағыс, <span class="k">-</span> — үзіліс, <span class="k">|</span> — такт (міндетті емес).</div>
+        <textarea class="field" id="mText" placeholder="р0*2 р2 р4 | ж0*4 | ж2 ж0 р4 р2 | р0*4"></textarea>
+        <div class="row" style="margin-top:8px"><button class="btn sm" id="mParse">Мәтінді оқу</button></div>
+      </details>
+      <div class="row"><button class="btn primary" id="mApply">Нотаға қолдану</button><span class="muted small" id="mMsg"></span></div>
+    </div>
+    <div class="pn" id="pnYt" hidden>
+      <span class="muted small">YouTube сілтемесін қой. Бейнені ойнатып, бағдарлама сол дыбысты тыңдап нотаға айналдырады. Бір ғана әуен анық естілетін бейне жақсы шығады: домбыра күйі, ән, сыбызғы. Оркестр мен барабаны бар әнде қате көп болады.</span>
+      <div class="row"><input class="field" id="ytUrl" style="flex:1" placeholder="https://www.youtube.com/watch?v=..." inputmode="url"><input class="field" id="ytStart" style="width:84px" placeholder="0:00" aria-label="Басталу уақыты"><button class="btn" id="ytShow">Ашу</button></div>
+      <div class="ytbox" id="ytBox" hidden></div>
+      <a class="btn sm" id="ytOpen" href="#" target="_blank" rel="noopener" hidden>YouTube-та жаңа бетте ашу</a>
+      <button class="btn wood big" id="ytAuto">▶ Автоматты тыңдап, нотаға айналдыру</button>
+      <div class="row"><button class="btn sm" id="ytTab">Басқа қойындыдан тыңдау</button><button class="btn sm" id="ytMic">Микрофонмен тыңдау</button></div>
+      <span class="muted small" id="ytMsg">Компьютерде (Chrome): сілтемені қойып, «Автоматты тыңдау» батырмасын бас. Бір рет «Бөлісу» деп растайсың, қалғанын бағдарлама өзі жасайды: бейнені қосады, тыңдайды, тоқтатады, нотаға айналдырады. Телефонда: «Микрофонмен тыңдау».</span>
+    </div>
+  </div>
+</div>
+<div class="player">
+  <div class="in">
+    <button class="play" id="playBtn" aria-label="Ойнату"><svg viewBox="0 0 24 24" fill="currentColor" id="playIco" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+    <div class="prog"><div class="track"><i id="bar"></i></div><span class="ptime"><span id="ptime">0:00 / 0:00</span><span id="ptempo">♩ 90</span></span></div>
+  </div>
+</div>
+<div class="count" id="count" hidden><span id="countN">3</span></div>
+<div class="badge" id="badge" hidden><span class="dot" style="background:#fff"></span>Тыңдап тұрмын… ойна!</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const NAMES=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль','Соль♯','Ля','Ля♯','Си'];
+const TUNINGS={kvarta:[50,55],kvinta:[50,57]};
+const MAXF=19,SR=16000;
+const SAMPLE=[[62,1],[64,.5],[66,.5],[67,1],[69,1],[69,1],[67,.5],[66,.5],[64,2],[66,1],[67,.5],[69,.5],[71,1],[69,1],[67,1],[66,1],[64,2],[62,1],[64,1],[66,1],[64,1],[62,3],[null,1]];
+const st={melody:SAMPLE.map(([m,b])=>({m,b})),tempo:90,tune:'kvarta',meter:4,shift:0,maxDur:60,source:'Мысал әуен',sel:-1,check:null};
+try{const s=JSON.parse(localStorage.getItem('dombyra-etud')||'null');if(s&&Array.isArray(s.melody)&&s.melody.length){Object.assign(st,s);st.sel=-1;st.check=null;}}catch(e){}
+function save(){try{localStorage.setItem('dombyra-etud',JSON.stringify({melody:st.melody,tempo:st.tempo,tune:st.tune,meter:st.meter,shift:st.shift,maxDur:st.maxDur,source:st.source}));}catch(e){}}
+const invalidate=()=>{st.check=null;};
+const fmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+const sleep=()=>new Promise(r=>setTimeout(r,0));
+const clock=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function cmsg(t){$('#cmsg').textContent=t;}
+
+/* ---------- chat ---------- */
+const AVA='<div class="ava"><svg viewBox="0 0 400 1200"><use href="#dombyra"/></svg></div>';
+function teacher(html,acts,warn){const m=document.createElement('div');m.className='m';
+  m.innerHTML=AVA+`<div class="bub${warn?' warn':''}"><div class="who">Ұстаз</div><div>${html}</div>${acts&&acts.length?'<div class="acts"></div>':''}<div class="tm">${clock()}</div></div>`;
+  if(acts)acts.forEach(([label,fn,cls])=>{const b=document.createElement('button');b.className='btn sm '+(cls||'');b.textContent=label;b.onclick=fn;m.querySelector('.acts').appendChild(b);});
+  addMsg(m);return m;}
+function addMsg(m){const c=$('#chat');c.appendChild(m);c.scrollTop=c.scrollHeight;}
+function voiceEl(buf,name){const d=buf.getChannelData(0),n=34,step=Math.floor(d.length/n)||1,pk=[];let mx=1e-6;
+  for(let i=0;i<n;i++){let s=0;for(let j=i*step;j<Math.min(d.length,(i+1)*step);j+=4)s=Math.max(s,Math.abs(d[j]));pk.push(s);mx=Math.max(mx,s);}
+  const w=document.createElement('div');
+  w.innerHTML=`<div class="voice"><button class="vplay" aria-label="Тыңдау"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><div class="vbars">${pk.map(v=>`<i style="height:${Math.max(12,Math.round(v/mx*100))}%"></i>`).join('')}</div><span class="vdur">${fmt(buf.duration)}</span></div>${name?`<div class="vname">${esc(name)}</div>`:''}`;
+  w.querySelector('.vplay').onclick=()=>toggleVoice(buf,w);return w;}
+const canSave=window.self===window.top;
+function voiceMsg(buf,name,blob){const m=document.createElement('div');m.className='m me';const b=document.createElement('div');b.className='bub';b.appendChild(voiceEl(buf,name));
+  if(blob&&canSave){const a=document.createElement('a');a.className='btn sm';a.style.marginTop='6px';a.textContent='Жазбаны сақтау';a.href=URL.createObjectURL(blob);a.download='dombyra-zhazba.'+((blob.type||'').includes('ogg')?'ogg':(blob.type||'').includes('mp4')?'m4a':'webm');b.appendChild(a);}
+  const tm=document.createElement('div');tm.className='tm';tm.textContent=clock()+' ✓✓';b.appendChild(tm);m.appendChild(b);addMsg(m);}
+let vp=null;
+function toggleVoice(buf,w){ac();const same=vp&&vp.w===w;stopVoice();if(same)return;stopPlay();
+  const s=ctx.createBufferSource();s.buffer=buf;s.connect(ctx.destination);const t=ctx.currentTime;s.start();
+  vp={s,w,t,buf};w.querySelector('.vplay').innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+  s.onended=()=>{if(vp&&vp.s===s)stopVoice();};
+  const bars=w.querySelectorAll('.vbars i');const step=()=>{if(!vp||vp.s!==s)return;const p=(ctx.currentTime-t)/buf.duration;bars.forEach((b,i)=>b.classList.toggle('p',i/bars.length<p));w.querySelector('.vdur').textContent=fmt(ctx.currentTime-t);requestAnimationFrame(step);};step();}
+function stopVoice(){if(!vp)return;const {s,w,buf}=vp;vp=null;try{s.stop();}catch(e){}
+  w.querySelector('.vplay').innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';w.querySelectorAll('.vbars i').forEach(b=>b.classList.remove('p'));w.querySelector('.vdur').textContent=fmt(buf.duration);}
+
+/* ---------- strings, frets, fingers, strokes ---------- */
+let pieces=[],totalBeats=0;
+function cands(m,str){const r=[];str.forEach((o,s)=>{const f=m-o;if(f>=0&&f<=MAXF)r.push({s,f});});return r;}
+function compute(){
+  const str=TUNINGS[st.tune],lo=str[0],hi=str[1]+MAXF;let best=null;
+  for(let k=-3;k<=3;k++){const sh=k*12+st.shift;let out=0,sum=0;
+    for(const n of st.melody){if(n.m==null)continue;const c=cands(n.m+sh,str);if(!c.length)out++;else sum+=Math.min(...c.map(x=>x.f));}
+    const cost=out*100+sum;if(!best||cost<best.cost-1e-9)best={cost,sh};}
+  if(st.melody.some(n=>n.m!=null)&&st.melody.every(n=>n.m==null||n.fs!=null))best={cost:0,sh:st.shift};
+  const items=st.melody.map((n,i)=>{const it={m:n.m,b:n.b,fs:n.fs,i};if(n.m!=null){let p=n.m+best.sh;it.out=false;while(p<lo){p+=12;it.out=true;}while(p>hi){p-=12;it.out=true;}it.pm=p;}else it.pm=null;return it;});
+  const C=items.map(it=>{if(it.pm==null)return null;let c=cands(it.pm,str);if(it.fs!=null){const f=c.filter(x=>x.s===it.fs);if(f.length)c=f;}return c;});
+  const idx=items.map((_,i)=>i).filter(i=>C[i]);const D=[];
+  idx.forEach((i,k)=>{D[k]=C[i].map(c=>{const base=c.f*0.22+(c.f>12?(c.f-12)*0.3:0);if(k===0)return{cost:base,from:-1};
+    const pi=idx[k-1];let bc=Infinity,bf=0;C[pi].forEach((p,j)=>{let t=D[k-1][j].cost+base;if(p.f>0&&c.f>0)t+=Math.max(0,Math.abs(c.f-p.f)-2)*0.7;if(p.s!==c.s)t+=0.25;if(t<bc){bc=t;bf=j;}});return{cost:bc,from:bf};});});
+  let k=idx.length-1;if(k>=0){let j=0;D[k].forEach((x,jj)=>{if(x.cost<D[k][j].cost)j=jj;});for(;k>=0;k--){const i=idx[k];items[i].s=C[i][j].s;items[i].f=C[i][j].f;j=D[k][j].from;}}
+  let pos=null;items.forEach(it=>{if(it.pm==null)return;if(it.f===0){it.fg=0;return;}if(pos==null)pos=it.f;if(it.f<pos)pos=it.f;else if(it.f>pos+3)pos=it.f-3;it.fg=it.f-pos+1;});
+  pieces=[];let acc=0,t=0,bar=0,nib=0;
+  items.forEach(it=>{let rem=it.b,first=true;while(rem>1e-6){const room=st.meter-acc,take=Math.min(rem,room);pieces.push({...it,b:take,start:t,bar,cont:!first,nib:++nib});t+=take;acc+=take;rem-=take;first=false;if(acc>=st.meter-1e-6){acc=0;bar++;nib=0;}}});
+  totalBeats=t;}
+function strokesOf(p){const n=Math.max(1,Math.round(p.b*2)),s0=Math.round(p.start*2),a=[];for(let q=0;q<n;q++)a.push((s0+q)%2===0?'↓':'↑');return a;}
+const hiName=()=>NAMES[TUNINGS[st.tune][1]%12];
+const FINGER=['ашық ішек','сұқ саусақ','ортан саусақ','аты жоқ саусақ','шынашақ'];
+
+/* ---------- dombyra neck ---------- */
+const NK={x0:96,L:1150,yHi:92,yLo:146,top:62,bot:176};
+const fx=n=>NK.x0+NK.L*(1-Math.pow(2,-n/12));
+const yOf=s=>s===1?NK.yHi:NK.yLo;
+function drawNeck(){const end=fx(MAXF)+18;let h='';
+  h+=`<path d="M8 70 Q4 119 8 168 L${NK.x0} ${NK.bot} L${NK.x0} ${NK.top} Z" fill="url(#gNeck)" stroke="#2c1a0a" stroke-width="2"/>`;
+  [[30,60],[66,58],[30,180],[66,182]].forEach(([x,y])=>h+=`<circle cx="${x}" cy="${y}" r="9" fill="#e8c46a" stroke="#2c1a0a" stroke-width="2"/>`);
+  h+=`<rect x="${NK.x0}" y="${NK.top}" width="${end-NK.x0}" height="${NK.bot-NK.top}" fill="url(#gNeck)"/>`;
+  h+=`<path d="M${end-10} ${NK.top-20} C ${end+60} ${NK.top-26}, 1000 ${NK.top-60}, 1004 ${NK.top-70} L1004 ${NK.bot+70} C 1000 ${NK.bot+60}, ${end+60} ${NK.bot+26}, ${end-10} ${NK.bot+20} Z" fill="url(#gWood)" stroke="#2c1a0a" stroke-width="2"/>`;
+  h+=`<rect x="${NK.x0-6}" y="${NK.top}" width="8" height="${NK.bot-NK.top}" fill="#efe2c4"/>`;
+  for(let n=1;n<=MAXF;n++){const x=fx(n);h+=`<line x1="${x}" y1="${NK.top}" x2="${x}" y2="${NK.bot}" stroke="#e9d6b0" stroke-width="3" stroke-opacity=".9"/>`;
+    h+=`<text x="${(fx(n-1)+x)/2}" y="${NK.bot+22}" text-anchor="middle" font-size="13" font-family="PT Mono,monospace" fill="#a2b5c3">${n}</text>`;}
+  h+=`<text x="${NK.x0-18}" y="${NK.bot+22}" text-anchor="middle" font-size="13" font-family="PT Mono,monospace" fill="#a2b5c3">0</text>`;
+  h+=`<text x="${NK.x0+6}" y="${NK.top-14}" font-size="14" fill="#f0c58c" font-family="PT Sans,sans-serif" id="lblHi"></text>`;
+  h+=`<text x="${NK.x0+6}" y="${NK.bot+42}" font-size="14" fill="#f0c58c" font-family="PT Sans,sans-serif">Ре ішегі (төменгі сызық)</text>`;
+  h+=`<line id="sHi" x1="20" y1="${NK.yHi}" x2="1004" y2="${NK.yHi}" stroke="#f4ead6" stroke-width="2.6"/>`;
+  h+=`<line id="sLo" x1="20" y1="${NK.yLo}" x2="1004" y2="${NK.yLo}" stroke="#f4ead6" stroke-width="2.6"/>`;
+  h+=`<g id="mk"></g>`;
+  $('#neck').innerHTML=h;}
+function showOnNeck(p,next){const g=$('#mk');if(!g)return;let h='';
+  $('#lblHi').textContent=hiName()+' ішегі (жоғарғы сызық)';
+  if(next&&next.pm!=null&&(!p||next.f!==p.f||next.s!==p.s)){const x=next.f===0?NK.x0-22:(fx(next.f-1)+fx(next.f))/2;h+=`<circle cx="${x}" cy="${yOf(next.s)}" r="15" fill="none" stroke="#3fc1cf" stroke-width="3" stroke-dasharray="5 4" opacity=".8"/>`;}
+  if(p&&p.pm!=null){const y=yOf(p.s);
+    if(p.f===0){h+=`<line x1="20" y1="${y}" x2="1004" y2="${y}" stroke="#3fc1cf" stroke-width="7" stroke-opacity=".45"/><circle cx="${NK.x0-22}" cy="${y}" r="17" fill="#3fc1cf"/><text x="${NK.x0-22}" y="${y+6}" text-anchor="middle" font-size="18" font-weight="700" fill="#062227" font-family="Rubik,sans-serif">0</text>`;}
+    else{const x=(fx(p.f-1)+fx(p.f))/2;h+=`<circle cx="${x}" cy="${y}" r="24" fill="#e8c46a" opacity=".25"/><circle class="mk-dot" cx="${x}" cy="${y}" r="17" fill="#e8c46a" stroke="#2c1a0a" stroke-width="2"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="18" font-weight="800" fill="#2a1606" font-family="Rubik,sans-serif">${p.fg}</text>`;
+      const wrap=$('#neckWrap');const ratio=x/1000;const target=ratio*wrap.scrollWidth-wrap.clientWidth/2;if(Math.abs(wrap.scrollLeft-target)>wrap.clientWidth*.3)wrap.scrollTo({left:target,behavior:'smooth'});}
+    $('#nowName').textContent=NAMES[p.pm%12];
+    $('#nowWhere').innerHTML=`<b>${p.s?hiName():'Ре'}</b> ішегі · <b>${p.f}</b>-перне · ${p.f?`<b>${p.fg}</b> – ${FINGER[p.fg]}`:'ашық ішек, баспайсың'}`;
+  }else if(p){$('#nowName').textContent='—';$('#nowWhere').textContent='Үзіліс: ішекті басып, дыбысын өшір';}
+  g.innerHTML=h;}
+function showStroke(p,q){const ar=strokesOf(p);$('#nowArrow').textContent=p.pm==null?'·':ar[q]||ar[0];$('#nowSc').textContent=p.pm==null?'үзіліс':`${(q||0)+1} / ${ar.length} қағыс`;}
+function animIdle(){const t=performance.now();const f=()=>{if(playing)return;drawStage(hwBeat);if(performance.now()-t<500)requestAnimationFrame(f);};f();}
+function vibe(s){const el=s===1?$('#sHi'):$('#sLo');if(!el)return;el.classList.remove('vib');void el.getBoundingClientRect();el.classList.add('vib');}
+
+/* ---------- vertical stage for phones: dombyra stands upright, notes fall from the top ---------- */
+const mq=window.matchMedia('(max-width:700px)');const stageOn=()=>true;
+let hwBeat=0;const lastPl=[0,0];
+function rr(g,x,y,w,h,r){r=Math.max(0,Math.min(r,h/2,w/2));g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function drawStage(beat){
+  const cv=$('#hw');const W=cv.clientWidth,H=cv.clientHeight;if(!W||!H)return;
+  const dpr=Math.min(3,window.devicePixelRatio||1);if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);}
+  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
+  const now=performance.now(),hn=hiName(),res=st.check?st.check.res:null;
+  let cur=-1;pieces.forEach((p,k)=>{if(beat>=p.start-1e-6&&beat<p.start+p.b-1e-6)cur=k;});
+  /* ---- left: the dombyra standing upright ---- */
+  const LW=Math.min(Math.max(150,W*.44),300),TWm=Math.min(W-LW-26,460),ox=Math.max(0,(W-(LW+26+TWm))/2);g.translate(ox,0);
+  const cx=LW/2+6,gap=Math.min(58,LW*.26),xs=[cx-gap/2,cx+gap/2],neckW=gap+46;
+  const nutY=58,L=(H-nutY-60)/0.69,fy=n=>nutY+L*(1-Math.pow(2,-n/12)),neckBot=fy(MAXF)+10;
+  const bg=g.createLinearGradient(0,neckBot-20,0,H+60);bg.addColorStop(0,'#e7a95c');bg.addColorStop(1,'#7c4a1f');
+  g.fillStyle=bg;g.beginPath();g.ellipse(cx,neckBot+LW*.7,LW*.5,LW*.76,0,0,Math.PI*2);g.fill();g.strokeStyle='#2c1a0a';g.lineWidth=2;g.stroke();
+  const hg=g.createLinearGradient(cx-neckW/2,0,cx+neckW/2,0);hg.addColorStop(0,'#5a3517');hg.addColorStop(.5,'#8a5629');hg.addColorStop(1,'#5a3517');
+  g.fillStyle=hg;rr(g,cx-neckW/2+6,8,neckW-12,nutY-8,8);g.fill();g.fillRect(cx-neckW/2,nutY,neckW,neckBot-nutY);
+  g.fillStyle='#e8c46a';g.strokeStyle='#2c1a0a';g.lineWidth=1.5;[[-1,22],[1,22],[-1,44],[1,44]].forEach(([sx,y])=>{g.beginPath();g.arc(cx+sx*(neckW/2+4),y,7,0,Math.PI*2);g.fill();g.stroke();});
+  g.textAlign='right';g.font='11px "PT Mono",monospace';
+  for(let n=1;n<=MAXF;n++){const y=fy(n);g.strokeStyle='rgba(233,214,176,.9)';g.lineWidth=2.5;g.beginPath();g.moveTo(cx-neckW/2,y);g.lineTo(cx+neckW/2,y);g.stroke();g.fillStyle='#a2b5c3';g.fillText(String(n),cx-neckW/2-7,(fy(n-1)+y)/2+4);}
+  g.fillStyle='#efe2c4';g.fillRect(cx-neckW/2,nutY-3,neckW,6);
+  xs.forEach((x,si)=>{const a=Math.max(0,1-(now-lastPl[si])/450)*3;g.strokeStyle='#f4ead6';g.lineWidth=2.2;g.beginPath();
+    for(let y=nutY;y<=H;y+=6){const t=(y-nutY)/(H-nutY);const off=a*Math.sin(now/16+y/22)*Math.sin(Math.PI*t);if(y===nutY)g.moveTo(x+off,y);else g.lineTo(x+off,y);}g.stroke();});
+  g.textAlign='center';g.font='700 12px "PT Sans",sans-serif';xs.forEach((x,i)=>{const t=i?hn:'Ре';const w=g.measureText(t).width+12;g.fillStyle='rgba(12,26,37,.85)';rr(g,x-w/2,neckBot+6,w,18,9);g.fill();g.fillStyle='#f0c58c';g.fillText(t,x,neckBot+19);});
+  const p=cur>=0?pieces[cur]:null;let nx=null;for(let k=(cur>=0?cur+1:0);k<pieces.length;k++){if(pieces[k].pm!=null&&pieces[k].start>=beat-1e-6){nx=pieces[k];break;}}
+  const py=q=>q.f===0?nutY-16:(fy(q.f-1)+fy(q.f))/2;
+  if(nx&&(!p||p.pm==null||nx.f!==p.f||nx.s!==p.s)){g.strokeStyle='#3fc1cf';g.lineWidth=3;g.setLineDash([5,4]);g.beginPath();g.arc(xs[nx.s],py(nx),13,0,Math.PI*2);g.stroke();g.setLineDash([]);}
+  if(p&&p.pm!=null){const x=xs[p.s];
+    if(p.f===0){g.strokeStyle='rgba(63,193,207,.5)';g.lineWidth=8;g.beginPath();g.moveTo(x,nutY);g.lineTo(x,H);g.stroke();g.fillStyle='#3fc1cf';g.beginPath();g.arc(x,nutY-16,13,0,Math.PI*2);g.fill();g.fillStyle='#062227';g.font='800 15px Rubik,sans-serif';g.fillText('0',x,nutY-11);}
+    else{const y=py(p);g.fillStyle='rgba(232,196,106,.3)';g.beginPath();g.arc(x,y,20,0,Math.PI*2);g.fill();g.fillStyle='#e8c46a';g.beginPath();g.arc(x,y,14,0,Math.PI*2);g.fill();g.strokeStyle='#2c1a0a';g.lineWidth=2;g.stroke();g.fillStyle='#2a1606';g.font='800 15px Rubik,sans-serif';g.fillText(String(p.fg),x,y+5);}}
+  /* ---- right: number notation standing beside it, read from top to bottom ---- */
+  const X0=LW+18,TW=TWm,X1=X0+TW;if(TW<120)return;
+  g.fillStyle='#f6efe1';rr(g,X0,6,TW,H-12,12);g.fill();
+  const cF=X0+18,cR=X0+TW*.38,cH=X0+TW*.6,cS=X1-26,lineY=Math.round(H*.3);
+  const hs=pieces.map(q=>Math.max(40,q.b*44));const ys=[];let acc=0;hs.forEach(h=>{ys.push(acc);acc+=h;});
+  let off=0;if(cur>=0){off=ys[cur]+hs[cur]*Math.min(1,(beat-pieces[cur].start)/pieces[cur].b);}else if(beat>=totalBeats)off=acc;
+  g.save();rr(g,X0,6,TW,H-12,12);g.clip();
+  g.strokeStyle='#6b7a80';g.lineWidth=1.5;[cR,cH].forEach(x=>{g.beginPath();g.moveTo(x,34);g.lineTo(x,H);g.stroke();});
+  if(cur>=0){const y=lineY+ys[cur]-off;g.fillStyle='rgba(63,193,207,.28)';g.fillRect(X0,y,TW,hs[cur]);}
+  pieces.forEach((q,k)=>{const y=lineY+ys[k]-off,h=hs[k];if(y+h<30||y>H)return;
+    const r=res&&res[k]?res[k].status:null;if(r){g.fillStyle=r==='ok'?'rgba(31,138,76,.18)':'rgba(196,59,48,.2)';g.fillRect(X0,y,TW,h);}
+    if(q.start%st.meter<1e-6){g.strokeStyle='#1d2a30';g.lineWidth=2;g.beginPath();g.moveTo(X0+4,y);g.lineTo(X1-4,y);g.stroke();g.fillStyle='#8a979c';g.font='10px "PT Mono",monospace';g.textAlign='left';g.fillText((q.bar+1)+'-такт',X0+6,y+11);}
+    const past=k<cur;g.globalAlpha=past?.45:1;const mid=y+h/2+6;
+    if(q.pm==null){g.fillStyle='#8a979c';g.font='12px "PT Sans",sans-serif';g.textAlign='center';g.fillText('үзіліс',(cR+cH)/2,mid);}
+    else{const x=q.s?cH:cR;g.font='800 19px "PT Mono",monospace';const tw=g.measureText(String(q.f)).width+8;g.fillStyle=k===cur?'#bfe6ea':'#f6efe1';if(r)g.fillStyle=r==='ok'?'#d6efdc':'#f8d7d3';g.fillRect(x-tw/2,mid-17,tw,22);
+      g.fillStyle=q.out?'#c43b30':'#14212a';g.textAlign='center';g.fillText(String(q.f),x,mid);
+      if(!q.cont){g.fillStyle='#a2650a';g.font='700 13px "PT Mono",monospace';g.fillText(q.f?String(q.fg):'',cF,mid-1);g.fillStyle='#55656c';g.font='10px "PT Sans",sans-serif';g.fillText(NAMES[q.pm%12],cF,mid+11);}
+      const ar=strokesOf(q);g.fillStyle='#0b7470';g.font='800 14px Rubik,sans-serif';g.fillText(String(ar.length),cS,mid-3);g.fillStyle='#55656c';g.font='10px sans-serif';g.fillText(ar.join(''),cS,mid+10);}
+    g.globalAlpha=1;});
+  g.fillStyle='#f6efe1';g.fillRect(X0,6,TW,28);g.fillStyle='#55656c';g.font='700 11px "PT Sans",sans-serif';g.textAlign='center';
+  g.fillText('саусақ',cF+4,24);g.fillText('Ре',cR,24);g.fillText(hn,cH,24);g.fillText('қағыс',cS,24);
+  g.strokeStyle='#3fc1cf';g.lineWidth=2;g.beginPath();g.moveTo(X0,lineY);g.lineTo(X1,lineY);g.stroke();
+  g.restore();
+  g.fillStyle='#3fc1cf';g.beginPath();g.moveTo(X0-2,lineY-7);g.lineTo(X0+8,lineY);g.lineTo(X0-2,lineY+7);g.fill();
+  if(beat<0){g.setTransform(dpr,0,0,dpr,0,0);g.fillStyle='rgba(12,26,37,.55)';g.fillRect(0,0,W,H);g.fillStyle='#d9984c';g.font='800 '+Math.round(Math.min(W,H)*.35)+'px Rubik,sans-serif';g.textAlign='center';g.fillText(String(Math.ceil(-beat)),W/2,H*.55);}
+}
+mq.addEventListener('change',()=>{drawStage(hwBeat);});
+window.addEventListener('resize',()=>{if(!playing)drawStage(hwBeat);});
+document.addEventListener('fullscreenchange',()=>setTimeout(()=>{if(!playing)drawStage(hwBeat);},60));
+$('#fsBtn').onclick=()=>{const el=$('#stage');try{if(document.fullscreenElement)document.exitFullscreen();else{const r=(el.requestFullscreen||el.webkitRequestFullscreen).call(el);if(r&&r.catch)r.catch(()=>{});}}catch(e){}};
+$('#sPlay').onclick=()=>playing?stopPlay():startPlay();
+
+/* ---------- render ---------- */
+function render(){
+  compute();const hn=hiName();let html='',cur=-1;const res=st.check?st.check.res:null;
+  pieces.forEach((p,k)=>{
+    if(p.bar!==cur){if(cur>=0)html+='</div>';cur=p.bar;html+=`<div class="bar"><span class="barno">${cur+1}</span>`;}
+    const w=Math.round(30+p.b*22);let cls=p.i===st.sel?' sel':'';if(res&&res[k])cls+=' '+res[k].status;
+    if(p.pm==null)html+=`<div class="col rest${cls}" data-k="${k}" data-i="${p.i}" tabindex="0" style="--w:${w}px"><div class="fg"></div><div class="str"></div><div class="str"></div><div class="nm">үзіліс</div><div class="stk"><span class="cnt">·</span></div></div>`;
+    else{const ar=strokesOf(p),num=`<b class="${p.out?'out':''}">${p.f}</b>`;
+      html+=`<div class="col${cls}" data-k="${k}" data-i="${p.i}" tabindex="0" style="--w:${w}px" aria-label="${NAMES[p.pm%12]}, ${p.s?hn:'Ре'} ішегі, ${p.f}-перне, ${ar.length} қағыс"><div class="fg">${p.cont?'':p.fg}</div><div class="str">${p.s===1?num:''}</div><div class="str">${p.s===0?num:''}</div><div class="nm">${p.cont?'':NAMES[p.pm%12]}</div><div class="stk"><span class="cnt">${ar.length}</span><span class="ar">${ar.join('')}</span></div></div>`;}});
+  if(cur>=0)html+='</div>';
+  $('#tab').innerHTML=html;
+  $('#srcLbl').textContent=st.source;
+  $('#strInfo').textContent=`Жоғарғы сызық — ${hn} ішегі, төменгі сызық — Ре ішегі`;
+  const pr=(sel,attr,val)=>document.querySelectorAll(sel+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[attr]==String(val))));
+  pr('#tempoSeg','t',st.tempo);pr('#tuneSeg','tune',st.tune);pr('#meterSeg','m',st.meter);pr('#durSeg','d',st.maxDur);
+  $('#tempo').value=st.tempo;$('#tempoVal').textContent='♩ = '+st.tempo;$('#ptempo').textContent='♩ '+st.tempo;
+  const selP=pieces.find(x=>x.i===st.sel)||pieces.find(x=>x.pm!=null);
+  if(!playing&&selP){showOnNeck(selP,pieces[pieces.indexOf(selP)+1]);showStroke(selP,0);}
+  if(!playing){const sp=pieces.find(x=>x.i===st.sel);hwBeat=sp?sp.start:0;requestAnimationFrame(()=>drawStage(hwBeat));}
+  updEditor();renderResult();updTime(0);save();}
+
+/* ---------- editor ---------- */
+function updEditor(){const ed=$('#editor');const n=st.melody[st.sel];if(!n){ed.hidden=true;return;}ed.hidden=false;const p=pieces.find(x=>x.i===st.sel);
+  $('#edWhat').textContent=n.m==null?'Үзіліс':`${NAMES[p.pm%12]} · ${Math.max(1,Math.round(n.b*2))} қағыс`;
+  ed.querySelectorAll('[data-ed="up"],[data-ed="down"],[data-ed="str"]').forEach(b=>b.disabled=n.m==null);}
+$('#tab').addEventListener('click',e=>{const c=e.target.closest('.col');if(!c||checking)return;const i=+c.dataset.i;const was=st.sel===i;st.sel=was?-1:i;
+  if(playing)stopPlay();render();const p=pieces[+c.dataset.k];
+  if(!was&&p&&p.pm!=null){ac();showOnNeck(p,pieces[+c.dataset.k+1]);showStroke(p,0);const last=[null,null];hit(ctx.currentTime+.01,p.pm,.9,last,p.s);vibe(p.s);lastPl[p.s]=performance.now();animIdle();}});
+$('#tab').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const c=e.target.closest('.col');if(c){e.preventDefault();c.click();}}});
+$('#editor').addEventListener('click',e=>{const b=e.target.closest('[data-ed]');if(!b)return;const n=st.melody[st.sel];if(!n)return;const a=b.dataset.ed;
+  if(a==='up'&&n.m!=null){n.m++;delete n.fs;}if(a==='down'&&n.m!=null){n.m--;delete n.fs;}
+  if(a==='plus')n.b=Math.min(8,n.b+.5);if(a==='minus')n.b=Math.max(.5,n.b-.5);
+  if(a==='str'){const p=pieces.find(x=>x.i===st.sel);if(p)n.fs=p.s===1?0:1;}
+  if(a==='del'){st.melody.splice(st.sel,1);st.sel=-1;}if(a==='close')st.sel=-1;
+  if(a!=='close'&&a!=='str')invalidate();stopPlay();render();});
+
+/* ---------- controls ---------- */
+$('#durSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||recOn)return;st.maxDur=+b.dataset.d;render();teacher(`Жақсы, ${st.maxDur/60} минутқа дейін жазамын.`);});
+$('#tempoSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||checking)return;st.tempo=+b.dataset.t;restartIfPlaying();render();});
+$('#tempo').addEventListener('input',e=>{st.tempo=+e.target.value;$('#tempoVal').textContent='♩ = '+st.tempo;document.querySelectorAll('#tempoSeg button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.t===st.tempo)));});
+$('#tempo').addEventListener('change',()=>{restartIfPlaying();render();});
+$('#tuneSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.tune=b.dataset.tune;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();});
+$('#meterSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.meter=+b.dataset.m;invalidate();stopPlay();render();});
+$('#up').onclick=()=>{st.shift++;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();};
+$('#dn').onclick=()=>{st.shift--;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();};
+function loadSample(){stopPlay();st.melody=SAMPLE.map(([m,b])=>({m,b}));st.shift=0;st.tempo=90;st.sel=-1;st.source='Мысал әуен';invalidate();render();}
+
+/* ---------- audio ---------- */
+let ctx=null,out=null;
+function ac(){if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();out=ctx.createGain();out.gain.value=.85;
+  const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=70;
+  const comp=ctx.createDynamicsCompressor();comp.threshold.value=-12;comp.ratio.value=3;
+  const dry=ctx.createGain();dry.gain.value=.55;const wet=ctx.createGain();wet.gain.value=.75;
+  const conv=ctx.createConvolver();conv.normalize=true;conv.buffer=bodyIR();
+  out.connect(hp);hp.connect(dry);dry.connect(comp);hp.connect(conv);conv.connect(wet);wet.connect(comp);comp.connect(ctx.destination);}
+  if(ctx.state==='suspended')ctx.resume();return ctx;}
+/* wooden body + small room: damped resonances of a dombyra soundboard and a short reverb tail */
+function bodyIR(){const sr=ctx.sampleRate,len=Math.floor(sr*.9),b=ctx.createBuffer(2,len,sr);
+  const modes=[[108,.09,.55],[205,.07,.7],[292,.05,.4],[410,.045,.35],[610,.035,.28],[930,.025,.2],[1500,.018,.14],[2450,.012,.1],[3600,.008,.06]];
+  for(let ch=0;ch<2;ch++){const o=b.getChannelData(ch);o[0]=1.2;
+    for(let i=1;i<len;i++){const t=i/sr;let v=0;for(const [f,d,a] of modes)v+=a*Math.exp(-t/d)*Math.sin(2*Math.PI*f*t+ch*.4);
+      v+=(Math.random()*2-1)*.22*Math.exp(-t/.22);o[i]=v*.12;}}
+  return b;}
+/* plucked string: Karplus–Strong with exact tuning (allpass fractional delay), pick-position comb and a nail click.
+   up = ілу (up-stroke): softer, darker */
+const bufCache={};
+function pluck(midi,up){const key=midi+(up?'u':'d');if(bufCache[key])return bufCache[key];
+  const sr=ctx.sampleRate,f=440*Math.pow(2,(midi-69)/12),len=Math.floor(sr*2.4),buf=ctx.createBuffer(1,len,sr),o=buf.getChannelData(0);
+  const T60=Math.max(.7,2.1-(midi-50)*.05);
+  [[1,.58],[1.0016,.42]].forEach(([det,amp])=>{const fd=f*det,P=sr/fd,N=Math.max(2,Math.floor(P-.6)),frac=P-.5-N,c=(1-frac)/(1+frac);
+    const loop=Math.pow(10,-3/(T60*fd)),d=new Float32Array(N);let lp=0;const a=up?.62:.28;
+    for(let i=0;i<N;i++){const x=Math.random()*2-1;lp=lp*a+x*(1-a);d[i]=lp;}
+    const pk=Math.max(1,Math.floor(N*.13));for(let i=N-1;i>=pk;i--)d[i]-=d[i-pk]*.75;
+    let mean=0;for(let i=0;i<N;i++)mean+=d[i];mean/=N;for(let i=0;i<N;i++)d[i]-=mean;
+    let idx=0,prev=0,apx=0,apy=0;
+    for(let i=0;i<len;i++){const x=d[idx];const l=.5*(x+prev);prev=x;const y=c*l+apx-c*apy;apx=l;apy=y;d[idx]=y*loop;o[i]+=x*amp;idx=(idx+1)%N;}});
+  const cl=Math.floor(sr*(up?.0018:.0035));for(let i=0;i<cl;i++){const e=1-i/cl;o[i]+=(Math.random()*2-1)*(up?.12:.32)*e*e;}
+  let pk=1e-6;for(let i=0;i<len;i++)pk=Math.max(pk,Math.abs(o[i]));const gn=.8/pk;for(let i=0;i<len;i++)o[i]*=gn;
+  const fade=Math.floor(sr*.08);for(let i=0;i<fade;i++)o[len-1-i]*=i/fade;bufCache[key]=buf;return buf;}
+let srcs=[];
+function hit(time,midi,gain,last,s,up){const b=ctx.createBufferSource();b.buffer=pluck(midi,up);const g=ctx.createGain();g.gain.value=gain;b.connect(g);g.connect(out);b.start(time);
+  if(last[s])last[s].gain.setTargetAtTime(0,time,.015);last[s]=g;srcs.push(b);}
+function click(time,acc){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=acc?1600:1100;g.gain.setValueAtTime(.0001,time);g.gain.exponentialRampToValueAtTime(acc?.5:.3,time+.002);g.gain.exponentialRampToValueAtTime(.0001,time+.05);o.connect(g);g.connect(ctx.destination);o.start(time);o.stop(time+.06);srcs.push(o);}
+
+/* ---------- player ---------- */
+let playing=false,checking=false,t0=0,raf=0,beatDur=.6,playTo=0,lastK=-1,lastQ=-1,fullPlay=false;
+const PLAY='<path d="M8 5v14l11-7z"/>',STOP='<path d="M6 6h12v12H6z"/>';
+function schedule(T,b0,b1,notes,clicks){const str=TUNINGS[st.tune],last=[null,null],drone=$('#drone').checked;
+  if(notes)pieces.forEach(p=>{if(p.start<b0-1e-6||p.start>=b1-1e-6)return;
+    if(p.pm==null){[0,1].forEach(s=>{if(last[s]){last[s].gain.setTargetAtTime(0,T+p.start*beatDur,.03);last[s]=null;}});return;}
+    strokesOf(p).forEach((a,q)=>{const pos=p.start+q*.5,up=a==='↑',acc=Math.abs(pos%st.meter)<1e-6?1.12:Math.abs(pos%1)<1e-6?1:.92;
+      const time=T+pos*beatDur+(Math.random()-.5)*.01,gn=(up?.62:.88)*acc*(.93+Math.random()*.14),sp=up?.009:.013;
+      const t1=time,t2=time+sp;
+      if(drone){if(p.s===0){hit(up?t2:t1,p.pm,gn,last,0,up);hit(up?t1:t2,str[1],gn*.5,last,1,up);}else{hit(up?t2:t1,str[0],gn*.5,last,0,up);hit(up?t1:t2,p.pm,gn,last,1,up);}}
+      else hit(time,p.pm,gn,last,p.s,up);});});
+  if(clicks)for(let b=Math.ceil(b0-1e-6);b<b1-1e-6;b++)click(T+b*beatDur,b%st.meter===0);}
+function setPlayUI(on){$('#playIco').innerHTML=on?STOP:PLAY;$('#sPlayIco').innerHTML=on?STOP:PLAY;$('#playBtn').setAttribute('aria-label',on?'Тоқтату':'Ойнату');}
+function startPlay(){if(!pieces.some(p=>p.pm!=null))return;ac();stopVoice();stopPlay();playing=true;fullPlay=true;setPlayUI(true);
+  beatDur=60/st.tempo;t0=ctx.currentTime+.15+st.meter*beatDur;playTo=totalBeats;
+  for(let q=0;q<st.meter;q++)click(t0-(st.meter-q)*beatDur,q===0);
+  schedule(t0,0,totalBeats,true,$('#metro').checked);if(stageOn()&&!document.fullscreenElement)$('#stage').scrollIntoView({behavior:'smooth',block:'center'});raf=requestAnimationFrame(tick);}
+function playRange(b0,b1){ac();stopVoice();stopPlay();playing=true;fullPlay=false;setPlayUI(true);beatDur=60/st.tempo;t0=ctx.currentTime+.1-b0*beatDur;playTo=b1;schedule(t0,b0,b1,true,false);raf=requestAnimationFrame(tick);}
+function stopPlay(){if(checking)cancelCheck();playing=false;cancelAnimationFrame(raf);srcs.forEach(s=>{try{s.stop();}catch(e){}});srcs=[];
+  setPlayUI(false);$('#count').hidden=true;lastK=-1;lastQ=-1;document.querySelectorAll('.col.now').forEach(c=>c.classList.remove('now'));updTime(0);drawStage(hwBeat);}
+function restartIfPlaying(){if(playing&&fullPlay&&!checking){stopPlay();startPlay();}}
+function tick(){if(!playing)return;const now=ctx.currentTime,beat=(now-t0)/beatDur;
+  if(beat<0){$('#count').hidden=stageOn();$('#countN').textContent=Math.ceil(-beat);drawStage(beat);raf=requestAnimationFrame(tick);return;}
+  $('#count').hidden=true;
+  if(beat>=playTo){if(checking){if(beat>=playTo+1){finishCheck();return;}}
+    else if(fullPlay&&$('#loop').checked){srcs=[];t0=ctx.currentTime+.05;schedule(t0,0,totalBeats,true,$('#metro').checked);}
+    else{stopPlay();return;}}
+  const k=pieces.findIndex(p=>beat>=p.start&&beat<p.start+p.b);
+  if(k!==lastK){document.querySelectorAll('.col.now').forEach(c=>c.classList.remove('now'));const el=document.querySelector(`.col[data-k="${k}"]`);
+    if(el){el.classList.add('now');const r=el.getBoundingClientRect();if(!stageOn()&&(r.bottom>innerHeight-100||r.top<0))el.scrollIntoView({block:'center',behavior:'smooth'});}
+    if(k>=0)showOnNeck(pieces[k],pieces[k+1]);lastK=k;lastQ=-1;}
+  if(k>=0){const p=pieces[k],q=Math.floor((beat-p.start)*2+1e-6);if(q!==lastQ){lastQ=q;showStroke(p,q);if(p.pm!=null&&(!checking||$('#guide').checked)){vibe(p.s);lastPl[p.s]=performance.now();if($('#drone').checked){vibe(1-p.s);lastPl[1-p.s]=performance.now();}}}}
+  drawStage(Math.min(beat,totalBeats));
+  updTime(Math.min(beat,totalBeats));raf=requestAnimationFrame(tick);}
+function updTime(beat){const bd=60/st.tempo;$('#ptime').textContent=fmt(beat*bd)+' / '+fmt(totalBeats*bd);$('#bar').style.width=(totalBeats?Math.min(100,beat/totalBeats*100):0)+'%';}
+$('#playBtn').onclick=()=>playing?stopPlay():startPlay();
+
+/* ---------- microphone, WhatsApp-style hold to record ---------- */
+async function openMic(){if(!navigator.mediaDevices||!window.MediaRecorder)return null;
+  try{return await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:true}});}catch(e){return null;}}
+let rec=null,recOn=false,locked=false,holding=false,pressX=0,pressT=0,recStart=0,recIv=0,sendIt=true,an=null,levels=[],micWarned=false;
+const MIC_ICO='<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/>';
+const SEND_ICO='<path d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/>';
+function recUI(on){$('#cIdle').style.display=on?'none':'contents';$('#cRec').hidden=!on;$('#mic').classList.toggle('on',on&&!locked);$('#micIco').innerHTML=on&&locked?SEND_ICO:MIC_ICO;$('#mic').setAttribute('aria-label',on?(locked?'Жіберу':'Жіберу үшін жібер'):'Басып тұрып жазу');$('#slideHint').textContent=locked?'Жіберу үшін көрсеткіні бас':'‹ бас тарту үшін сырғыт';}
+async function startRec(){ac();stopPlay();stopVoice();
+  const stream=await openMic();
+  if(!stream){if(!micWarned){micWarned=true;teacher('Бұл бетте микрофон жабық. Әуенді WhatsApp-та дауыстық хабар етіп жазып, оны сақта да, мына қыстырғыш батырмасы арқылы маған жібер. Сайтқа орнатылған нұсқада микрофон тікелей жұмыс істейді.',[['Файл таңдау',()=>$('#file').click(),'primary']],true);}else $('#file').click();return false;}
+  const chunks=[];rec=new MediaRecorder(stream);recOn=true;sendIt=true;levels=[];
+  const srcN=ctx.createMediaStreamSource(stream);an=ctx.createAnalyser();an.fftSize=1024;srcN.connect(an);
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  rec.onstop=async()=>{recOn=false;locked=false;clearInterval(recIv);stream.getTracks().forEach(t=>t.stop());try{srcN.disconnect();}catch(e){}recUI(false);
+    if(!sendIt||(Date.now()-recStart)<700){if(sendIt)teacher('Тым қысқа болды. Микрофонды басып тұрып, әуенді айт.');return;}
+    const blob=new Blob(chunks,{type:rec.mimeType||'audio/webm'});handleAudio(await blob.arrayBuffer(),'',blob);};
+  rec.start(250);recStart=Date.now();recUI(true);
+  const cv=$('#rwave'),g=cv.getContext('2d'),buf=new Float32Array(an.fftSize);
+  recIv=setInterval(()=>{const s=(Date.now()-recStart)/1000;$('#rtime').textContent=fmt(s)+' / '+fmt(st.maxDur);
+    an.getFloatTimeDomainData(buf);let e=0;for(let i=0;i<buf.length;i++)e+=buf[i]*buf[i];levels.push(Math.min(1,Math.sqrt(e/buf.length)*6));
+    g.clearRect(0,0,cv.width,cv.height);const n=Math.floor(cv.width/6),L=levels.slice(-n);g.fillStyle='#3fc1cf';
+    L.forEach((v,i)=>{const h=Math.max(3,v*cv.height);g.fillRect(cv.width-(L.length-i)*6,(cv.height-h)/2,4,h);});
+    if(s>=st.maxDur&&rec.state==='recording')stopRec(true);},80);
+  return true;}
+function stopRec(send){if(!rec||rec.state!=='recording')return;sendIt=send;rec.stop();}
+const mic=$('#mic');
+mic.addEventListener('pointerdown',async e=>{e.preventDefault();
+  if(recOn){if(locked)stopRec(true);return;}
+  if(checking)return;holding=true;pressX=e.clientX;pressT=Date.now();try{mic.setPointerCapture(e.pointerId);}catch(_){}
+  const ok=await startRec();if(!ok){holding=false;return;}
+  if(!holding){locked=true;recUI(true);}});
+mic.addEventListener('pointermove',e=>{if(!holding||!recOn||locked)return;const dx=Math.min(0,e.clientX-pressX);mic.style.transform=`translateX(${dx}px) scale(1.15)`;if(dx<-90){holding=false;mic.style.transform='';stopRec(false);teacher('Жазба өшірілді.');}});
+function release(){if(!holding)return;holding=false;mic.style.transform='';if(!recOn)return;if(Date.now()-pressT<350){locked=true;recUI(true);}else stopRec(true);}
+mic.addEventListener('pointerup',release);mic.addEventListener('pointercancel',release);
+mic.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(recOn)stopRec(true);else startRec().then(ok=>{if(ok){locked=true;recUI(true);}});}});
+$('#binBtn').onclick=()=>{stopRec(false);teacher('Жазба өшірілді.');};
+$('#file').onchange=async e=>{const f=e.target.files[0];if(!f)return;e.target.value='';ac();stopPlay();handleAudio(await f.arrayBuffer(),f.name);};
+
+async function handleAudio(ab,name,blob){let dec;
+  try{dec=await ctx.decodeAudioData(ab.slice(0));}catch(e){teacher('Бұл файлды аша алмадым. mp3, m4a, ogg немесе wav түріндегі аудио жібер.',null,true);return;}
+  voiceMsg(dec,name,blob);const wait=teacher('Тыңдап жатырмын…');
+  const r=await analyzeMelody(dec,p=>{wait.querySelector('.bub>div:nth-child(2)').textContent='Тыңдап жатырмын… '+Math.round(p*100)+'%';});
+  wait.remove();
+  if(r.error){teacher(r.error,null,true);return;}
+  st.source=name||'Дауыстық хабар';render();
+  teacher(`Тамаша! <b>${r.count}</b> нота таптым, сенің қарқының ♩ = ${st.tempo}. Цифрлық нотасын жаздым, домбырада қайда басу керегін көрсетемін.`,
+    [['▶ Домбырамен тыңда',()=>startPlay(),'primary'],['Нотаны көру',()=>$('#tab').scrollIntoView({behavior:'smooth',block:'center'})],['Өзімді тексеру',()=>$('#checkBtn').scrollIntoView({behavior:'smooth',block:'center'})]]);}
+
+async function toMono(dec,maxDur){const dur=Math.min(dec.duration,maxDur);
+  const off=new OfflineAudioContext(1,Math.max(1,Math.ceil(dur*SR)),SR);const sn=off.createBufferSource();sn.buffer=dec;sn.connect(off.destination);sn.start();
+  return (await off.startRendering()).getChannelData(0);}
+
+/* ---------- melody: YIN pitch tracking + note segmentation ---------- */
+async function analyzeMelody(dec,progress){
+  const x0=await toMono(dec,st.maxDur);let peak=0;for(let i=0;i<x0.length;i++){const a=Math.abs(x0[i]);if(a>peak)peak=a;}
+  const x=new Float32Array(x0.length);const gn=peak>1e-5?.9/peak:1;for(let i=0;i<x0.length;i++)x[i]=x0[i]*gn;let voiced=0;
+  const W=512,HOP=320,TMIN=Math.floor(SR/900),TMAX=Math.floor(SR/70),FR=Math.floor((x.length-W-TMAX)/HOP);
+  if(FR<10)return{error:'Жазба тым қысқа. Кемінде 5 секунд жаз.'};
+  const rms=new Float32Array(FR),pm=new Float32Array(FR).fill(NaN),d=new Float32Array(TMAX+1);
+  for(let fi=0;fi<FR;fi++){const o=fi*HOP;let e=0;for(let j=0;j<W;j++)e+=x[o+j]*x[o+j];rms[fi]=Math.sqrt(e/W);}
+  const sorted=Array.from(rms).sort((a,b)=>a-b),gate=Math.max(.003,sorted[Math.floor(FR*.95)]*.12);
+  for(let fi=0;fi<FR;fi++){
+    if(fi%150===0){progress(fi/FR);await sleep();}
+    if(rms[fi]<gate)continue;const o=fi*HOP;let run=0;d[0]=1;
+    for(let t=1;t<=TMAX;t++){let s=0;for(let j=0;j<W;j++){const v=x[o+j]-x[o+j+t];s+=v*v;}run+=s;d[t]=run?s*t/run:1;}
+    let tau=-1;for(let t=TMIN;t<=TMAX;t++){if(d[t]<.22){while(t+1<=TMAX&&d[t+1]<d[t])t++;tau=t;break;}}
+    if(tau<0){let mi=TMIN;for(let t=TMIN;t<=TMAX;t++)if(d[t]<d[mi])mi=t;if(d[mi]<.4)tau=mi;}
+    if(tau<0||tau>=TMAX)continue;voiced++;
+    const a=d[tau-1],b=d[tau],c=tau+1<=TMAX?d[tau+1]:b,den=a+c-2*b,tt=den?tau+(a-c)/(2*den):tau;
+    pm[fi]=69+12*Math.log2(SR/tt/440);}
+  const sm=new Float32Array(FR).fill(NaN);
+  for(let i=0;i<FR;i++){if(isNaN(pm[i]))continue;const w=[];for(let j=i-2;j<=i+2;j++)if(j>=0&&j<FR&&!isNaN(pm[j]))w.push(pm[j]);w.sort((a,b)=>a-b);sm[i]=w[w.length>>1];}
+  const med=a=>{const s=a.slice().sort((p,q)=>p-q);return s[s.length>>1];};
+  {const vi=[];for(let i=0;i<FR;i++)if(!isNaN(sm[i]))vi.push(i);
+   for(let k=0;k<vi.length;k++){const w=[];for(let j=Math.max(0,k-12);j<=Math.min(vi.length-1,k+12);j++)w.push(sm[vi[j]]);const m=med(w),v=sm[vi[k]];
+     if(Math.abs(v+12-m)<1.5)sm[vi[k]]=v+12;else if(Math.abs(v-12-m)<1.5)sm[vi[k]]=v-12;}}
+  const hop=HOP/SR,notes=[];let cur=null;
+  const close=()=>{if(cur&&cur.v.length>=3){const n=cur.v.length,a=Math.floor(n*.2),b=Math.max(a+1,Math.ceil(n*.85));notes.push({f:med(cur.v.slice(a,b)),s:cur.s*hop,e:(cur.s+n)*hop});}cur=null;};
+  for(let i=0;i<FR;i++){const v=sm[i];
+    if(isNaN(v)){close();continue;}
+    if(cur){const m=med(cur.v);const lo=Math.max(cur.s+3,i-4);const minR=lo<i?Math.min(...Array.from(rms.slice(lo,i))):Infinity;
+      const onset=cur.v.length>=6&&rms[i]>minR*1.7&&rms[i]>gate*1.5;
+      if(Math.abs(v-m)<.75&&!onset){cur.v.push(v);continue;}close();}
+    cur={s:i,v:[v]};}
+  close();
+  for(let k=notes.length-1;k>=0;k--){const n=notes[k];if(n.e-n.s<.09){const pv=notes[k-1];if(pv&&n.s-pv.e<.05)pv.e=n.e;notes.splice(k,1);}}
+  if(notes.length>=2){
+    let sx=0,sy=0;notes.forEach(n=>{const w=n.e-n.s,ph=2*Math.PI*(n.f-Math.round(n.f));sx+=w*Math.cos(ph);sy+=w*Math.sin(ph);});const off=Math.atan2(sy,sx)/(2*Math.PI);
+    const hist=new Array(12).fill(0);notes.forEach(n=>{hist[((Math.round(n.f-off)%12)+12)%12]+=n.e-n.s;});
+    const MAJ=[6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88],MIN=[6.33,2.68,3.52,5.38,2.6,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+    const corr=(prof,t)=>{let mh=0,mp=0;for(let i=0;i<12;i++){mh+=hist[i];mp+=prof[i];}mh/=12;mp/=12;let a=0,b=0,c=0;for(let i=0;i<12;i++){const x=hist[(i+t)%12]-mh,y=prof[i]-mp;a+=x*y;b+=x*x;c+=y*y;}return a/Math.sqrt(b*c||1);};
+    let bk={r:-2,t:0,prof:MAJ};for(let t=0;t<12;t++)for(const prof of [MAJ,MIN]){const r=corr(prof,t);if(r>bk.r)bk={r,t,prof};}
+    const scale=new Set();const steps=bk.prof===MAJ?[0,2,4,5,7,9,11]:[0,2,3,5,7,8,10];steps.forEach(x=>scale.add((x+bk.t)%12));
+    notes.forEach(n=>{const v=n.f-off;let m=Math.round(v);const pc=x=>((x%12)+12)%12;
+      if(!scale.has(pc(m))){const lo=Math.floor(v),hi=Math.ceil(v),alt=m===lo?hi:lo;if(scale.has(pc(alt))&&Math.abs(v-m)>.3||scale.has(pc(alt))&&n.e-n.s<.18)m=alt;}
+      n.m=m;});
+  }
+  if(notes.length<2){const lvl=peak<.02?'өте төмен (микрофонға жақынырақ айт)':peak<.1?'төмендеу':'жақсы';return{error:`Әуенді таба алмадым. Дыбыс деңгейі: ${lvl}. Әуенді бөліктер: ${Math.round(voiced/FR*100)}%. Тынышырақ жерде, «ля-ля» деп созып, анық айтып көр.`};}
+  const seq=[];notes.forEach((n,k)=>{const nx=notes[k+1];if(!nx){seq.push({m:n.m,d:n.e-n.s});return;}
+    const gap=nx.s-n.e;if(gap>.2){seq.push({m:n.m,d:n.e-n.s});seq.push({m:null,d:gap});}else seq.push({m:n.m,d:nx.s-n.s});});
+  const md=med(seq.filter(q=>q.m!=null).map(q=>q.d));let bu=md,be=Infinity;
+  for(let u=md*.75;u<=md*1.3;u+=md*.01){let e=0;seq.forEach(q=>{const r=q.d/u*2;e+=Math.abs(r-Math.round(r))*(q.m==null?.5:1);});if(e<be){be=e;bu=u;}}
+  while(60/bu>132)bu*=2;while(60/bu<50)bu/=2;
+  const mel=[];seq.forEach(q=>{let b=Math.round(q.d/bu*2)/2;if(q.m==null&&b<.5)return;b=Math.max(.5,Math.min(8,b));mel.push({m:q.m,b});});
+  stopPlay();st.melody=mel;st.shift=0;st.sel=-1;st.tempo=Math.max(40,Math.min(160,Math.round(60/bu)));invalidate();
+  return{count:mel.filter(n=>n.m!=null).length};}
+
+/* ---------- self check ---------- */
+let chk=null;
+function setCheckUI(on){checking=on;$('#checkLbl').textContent=on?'Тоқтату':'Өзімді тексеру';$('#checkBtn').classList.toggle('danger',on);$('#checkBtn').classList.toggle('wood',!on);$('#badge').hidden=!on;}
+$('#checkBtn').onclick=async()=>{
+  if(checking){stopPlay();cmsg('Тексеру тоқтатылды.');return;}
+  if(recOn||!pieces.some(p=>p.pm!=null))return;
+  ac();stopPlay();stopVoice();
+  const stream=await openMic();
+  if(!stream){cmsg('Бұл бетте микрофон жабық. Ойыныңды WhatsApp-та метрономмен жазып, «Ойынымды файлмен жүктеу» батырмасын бас.');return;}
+  const chunks=[];const r=new MediaRecorder(stream);chk={stream,rec:r,chunks,recCtxStart:0,cancelled:false};
+  r.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  r.onstart=()=>{chk.recCtxStart=ctx.currentTime;};
+  r.onstop=async()=>{const c=chk;c.stream.getTracks().forEach(t=>t.stop());if(c.cancelled)return;
+    const blob=new Blob(c.chunks,{type:r.mimeType||'audio/webm'});await runCheck(await blob.arrayBuffer(),'mic',c.t0-c.recCtxStart);};
+  r.start(250);setCheckUI(true);st.check=null;render();
+  playing=true;fullPlay=true;setPlayUI(true);beatDur=60/st.tempo;
+  t0=ctx.currentTime+.4+st.meter*beatDur;chk.t0=t0;playTo=totalBeats;
+  for(let q=0;q<st.meter;q++)click(t0-(st.meter-q)*beatDur,q===0);
+  schedule(t0,0,totalBeats,$('#guide').checked,true);cmsg('Тыңдап тұрмын. Жарықтанған нотамен бірге ойна.');
+  (stageOn()?$('#stage'):$('#tab')).scrollIntoView({behavior:'smooth',block:stageOn()?'center':'start'});raf=requestAnimationFrame(tick);};
+function cancelCheck(){if(chk){chk.cancelled=true;try{chk.rec.stop();}catch(e){}}setCheckUI(false);}
+function finishCheck(){const c=chk;setCheckUI(false);playing=false;cancelAnimationFrame(raf);srcs=[];setPlayUI(false);
+  document.querySelectorAll('.col.now').forEach(e=>e.classList.remove('now'));lastK=-1;updTime(0);cmsg('Талданып жатыр…');try{c.rec.stop();}catch(e){}}
+$('#checkFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;e.target.value='';if(!pieces.some(p=>p.pm!=null))return;
+  ac();stopPlay();cmsg('Талданып жатыр…');await runCheck(await f.arrayBuffer(),'file',0);};
+
+function fft(re,im){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}}
+  for(let len=2;len<=n;len<<=1){const ang=-2*Math.PI/len,wr=Math.cos(ang),wi=Math.sin(ang),h=len>>1;
+    for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<h;j++){const a=i+j,b=a+h,tr=re[b]*cr-im[b]*ci,ti=re[b]*ci+im[b]*cr;re[b]=re[a]-tr;im[b]=im[a]-ti;re[a]+=tr;im[a]+=ti;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}}
+const MLO=36,MHI=100,NM=MHI-MLO+1;
+async function salience(x,progress){
+  const N=4096,H=512,F=Math.floor((x.length-N)/H)+1;if(F<4)return null;
+  const win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/(N-1));
+  const R=[];for(let m=MLO;m<=MHI;m++){const f0=440*Math.pow(2,(m-69)/12),a=[];for(let k=1;k<=6;k++){const f=f0*k;if(f>7600)break;a.push([Math.floor(f*.98/SR*N),Math.ceil(f*1.02/SR*N),1/Math.pow(k,.6)]);}R.push(a);}
+  const sal=new Float32Array(F*NM),rms=new Float32Array(F),re=new Float32Array(N),im=new Float32Array(N),mag=new Float32Array(N/2);
+  for(let fi=0;fi<F;fi++){
+    if(fi%120===0){progress(fi/F);await sleep();}
+    const o=fi*H;let e=0;for(let i=0;i<N;i++){re[i]=x[o+i]*win[i];im[i]=0;}
+    for(let i=N/2-H;i<N/2+H;i++)e+=x[o+i]*x[o+i];rms[fi]=Math.sqrt(e/(2*H));
+    fft(re,im);for(let i=0;i<N/2;i++)mag[i]=Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+    for(let m=0;m<NM;m++){let s=0;for(const [lo,hi,w] of R[m]){let mx=0;for(let b=lo;b<=hi;b++)if(mag[b]>mx)mx=mag[b];s+=w*mx;}sal[fi*NM+m]=s;}}
+  return {sal,rms,F,hop:H/SR,half:N/2/SR};}
+async function runCheck(ab,mode,base){
+  let dec,x;try{dec=await ctx.decodeAudioData(ab.slice(0));x=await toMono(dec,600);}catch(e){cmsg('Жазбаны аша алмадым. mp3, m4a немесе wav түрінде жүктеп көр.');return;}
+  const S=await salience(x,p=>cmsg('Талданып жатыр… '+Math.round(p*100)+'%'));if(!S){cmsg('Жазба тым қысқа.');return;}
+  const sr=Array.from(S.rms).sort((a,b)=>a-b),gate=Math.max(.002,sr[Math.floor(S.F*.9)]*.1),bd=60/st.tempo;
+  if(mode==='file'){let fi=0;while(fi<S.F&&S.rms[fi]<gate*2)fi++;base=fi*S.hop;}
+  const str=TUNINGS[st.tune],opens=new Set([str[0],str[1],str[0]+12,str[1]+12]);
+  const notes=pieces.map((p,k)=>({k,p})).filter(o=>o.p.pm!=null);
+  function judge(p,t,d,full){
+    let i0=Math.round((t+.12*d-S.half)/S.hop),i1=Math.round((t+.85*d-S.half)/S.hop);
+    if(i1<i0)i1=i0;if(i0<0||i1>=S.F)return{status:'miss'};
+    let e=0;for(let i=i0;i<=i1;i++)e+=S.rms[i];e/=(i1-i0+1);if(e<gate)return{status:'miss'};
+    const avg=m=>{if(m<MLO||m>MHI)return 0;let s=0;for(let i=i0;i<=i1;i++)s+=S.sal[i*NM+m-MLO];return s;};
+    const me=avg(p.pm);let mx=0;for(let dm=-2;dm<=2;dm++){if(!dm)continue;const m=p.pm+dm;if(opens.has(m))continue;const v=avg(m);if(v>mx)mx=v;}
+    const ok=me>=mx*.92;if(!full)return{status:ok?'ok':'bad'};
+    let heard=p.pm,hv=me;if(!ok)for(let dm=-6;dm<=6;dm++){const m=p.pm+dm;if(dm&&opens.has(m))continue;const v=avg(m);if(v>hv){hv=v;heard=m;}}
+    return{status:ok?'ok':'bad',heard};}
+  const scales=mode==='mic'?[.97,.985,1,1.015,1.03]:Array.from({length:25},(_,i)=>.75+i*.025);let best=null;
+  for(const sc of scales)for(let off=-.6;off<=.6001;off+=.03){let n=0;
+    for(const o of notes){if(judge(o.p,base+off+sc*o.p.start*bd,sc*o.p.b*bd,false).status==='ok')n++;}
+    const v=n-Math.abs(off)*.5-Math.abs(sc-1)*2;if(!best||v>best.v)best={v,sc,off};}
+  const res=[];let okN=0;
+  notes.forEach(o=>{const r=judge(o.p,base+best.off+best.sc*o.p.start*bd,best.sc*o.p.b*bd,true);res[o.k]=r;if(r.status==='ok')okN++;});
+  st.check={res,ok:okN,total:notes.length,audio:x,dec,map:{base:base+best.off,sc:best.sc,bd}};
+  render();cmsg('Тексеру аяқталды.');
+  const pct=Math.round(okN/notes.length*100);
+  teacher(pct>=90?`Керемет! ${okN}/${notes.length} нота дұрыс. Енді қарқынды жылдамдатып көр.`:`${okN}/${notes.length} нота дұрыс (${pct}%). Қызыл жерлерді «Дұрысын тыңда» арқылы тыңдап, баяу қарқынмен қайта ойнап көр.`,[['Нәтижені көру',()=>$('#result').scrollIntoView({behavior:'smooth',block:'start'})]]);
+  $('#result').scrollIntoView({block:'start',behavior:'smooth'});}
+function renderResult(){const box=$('#result');const c=st.check;if(!c){box.hidden=true;return;}box.hidden=false;
+  const pct=c.total?c.ok/c.total:0,stars=pct>=.9?3:pct>=.7?2:pct>=.4?1:0;
+  $('#stars').innerHTML=[0,1,2].map(i=>`<span class="${i<stars?'':'off'}">★</span>`).join('');
+  $('#scoreTxt').textContent=`${c.ok} / ${c.total} нота дұрыс (${Math.round(pct*100)}%)`;
+  const mp=$('#myPlay');mp.innerHTML='';const v=voiceEl(c.dec,'Менің ойным');v.style.maxWidth='420px';mp.appendChild(v);
+  const byBar=new Map();pieces.forEach((p,k)=>{const r=c.res[k];if(!r||r.status==='ok')return;if(!byBar.has(p.bar))byBar.set(p.bar,[]);byBar.get(p.bar).push({p,r});});
+  const ul=$('#mist');if(!byBar.size){ul.innerHTML='<li class="good">Керемет! Барлық нота дұрыс естілді.</li>';return;}
+  let h='';byBar.forEach((arr,bar)=>{
+    const parts=arr.map(({p,r})=>r.status==='miss'?`${p.nib}-нота <b>${NAMES[p.pm%12]}</b> естілмеді`:`${p.nib}-нота: <b>${NAMES[p.pm%12]}</b> (${p.s?hiName():'Ре'} ішегі, ${p.f}-перне) керек, ${NAMES[r.heard%12]} естілді`);
+    h+=`<li><span class="t"><b>${bar+1}-такт.</b> ${parts.join('; ')}.</span><span class="acts" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm primary" data-ok="${bar}">▶ Дұрысын тыңда</button><button class="btn sm" data-me="${bar}">▶ Өзіңді тыңда</button></span></li>`;});
+  ul.innerHTML=h;}
+let meSrc=null;
+$('#mist').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!st.check)return;ac();
+  if(b.dataset.ok!=null){const bar=+b.dataset.ok;playRange(bar*st.meter,Math.min(totalBeats,(bar+1)*st.meter));return;}
+  if(b.dataset.me!=null){stopPlay();stopVoice();const bar=+b.dataset.me,m=st.check.map,x=st.check.audio;
+    const s=Math.max(0,m.base+m.sc*bar*st.meter*m.bd-.1),en=Math.min(x.length/SR,m.base+m.sc*Math.min(totalBeats,(bar+1)*st.meter)*m.bd+.2);if(en<=s)return;
+    const buf=ctx.createBuffer(1,Math.floor((en-s)*SR),SR);buf.getChannelData(0).set(x.subarray(Math.floor(s*SR),Math.floor(s*SR)+buf.length));
+    if(meSrc)try{meSrc.stop();}catch(_){}meSrc=ctx.createBufferSource();meSrc.buffer=buf;meSrc.connect(ctx.destination);meSrc.start();}});
+
+/* ---------- teacher assistant: reviews the notation only when tapped ---------- */
+const MAJ=[6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88],MIN=[6.33,2.68,3.52,5.38,2.6,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+const pcOf=x=>((x%12)+12)%12;
+function findKey(mel){const h=new Array(12).fill(0);mel.forEach(n=>{if(n.m!=null)h[pcOf(n.m)]+=n.b;});
+  const corr=(prof,t)=>{let mh=0,mp=0;for(let i=0;i<12;i++){mh+=h[i];mp+=prof[i];}mh/=12;mp/=12;let a=0,b=0,c=0;for(let i=0;i<12;i++){const x=h[(i+t)%12]-mh,y=prof[i]-mp;a+=x*y;b+=x*x;c+=y*y;}return a/Math.sqrt(b*c||1);};
+  let best={r:-2,t:0,maj:true};for(let t=0;t<12;t++){const a=corr(MAJ,t),b=corr(MIN,t);if(a>best.r)best={r:a,t,maj:true};if(b>best.r)best={r:b,t,maj:false};}
+  const steps=best.maj?[0,2,4,5,7,9,11]:[0,2,3,5,7,8,10];best.scale=new Set(steps.map(x=>(x+best.t)%12));best.name=NAMES[best.t]+(best.maj?' мажор':' минор');return best;}
+function where(i){const p=pieces.find(q=>q.i===i);return p?`${p.bar+1}-такт, ${p.nib}-нота`:'';}
+function posStats(shift){const keep=st.shift;st.shift=shift;compute();let sum=0,n=0,mx=0,out=0;pieces.forEach(p=>{if(p.pm==null||p.cont)return;sum+=p.f;n++;mx=Math.max(mx,p.f);if(p.out)out++;});st.shift=keep;compute();return{mean:n?sum/n:0,mx,out};}
+function teacherReview(){compute();const mel=st.melody,sugs=[];const key=findKey(mel);const idx=mel.map((n,i)=>i).filter(i=>mel[i].m!=null);
+  const prevN=i=>{for(let j=i-1;j>=0;j--)if(mel[j].m!=null)return j;return -1;},nextN=i=>{for(let j=i+1;j<mel.length;j++)if(mel[j].m!=null)return j;return -1;};
+  // 1. scoops / wobbles between two equal notes
+  const merged=new Set();
+  idx.forEach(i=>{const n=mel[i],a=prevN(i),b=nextN(i);if(a<0||b<0||n.b>.5)return;if(mel[a].m===mel[b].m&&Math.abs(n.m-mel[a].m)<=2&&a===i-1){merged.add(i);
+    sugs.push({type:'merge',i,into:a,text:`<b>${where(i)}</b>: қысқа ${NAMES[pcOf(n.m)]} нотасын алып тастау`,why:'Бұл дауыстың сырғанауы сияқты: алдыңғы және келесі нота бірдей. Алдыңғы нотаға қосамын.'});}});
+  // 2. octave slips
+  idx.forEach(i=>{if(merged.has(i))return;const a=prevN(i);if(a<0)return;const d=mel[i].m-mel[a].m;if(Math.abs(d)<10)return;const m2=mel[i].m-Math.sign(d)*12;const b=nextN(i);
+    const near=b<0||Math.abs(m2-mel[b].m)<=Math.abs(mel[i].m-mel[b].m);if(!near)return;
+    sugs.push({type:'pitch',i,m:m2,text:`<b>${where(i)}</b>: ${NAMES[pcOf(mel[i].m)]} нотасын бір октава ${d>0?'төмен':'жоғары'} түсіру`,why:`Алдыңғы нотадан ${Math.abs(d)} жарты тонға секіреді, бұл көбіне октава қатесі.`});});
+  // 3. notes outside the mode
+  if(key.r>.55)idx.forEach(i=>{if(merged.has(i))return;const n=mel[i];if(key.scale.has(pcOf(n.m)))return;const a=prevN(i);
+    const c=[n.m-1,n.m+1].filter(m=>key.scale.has(pcOf(m)));if(!c.length)return;const ref=a>=0?mel[a].m:n.m;c.sort((x,y)=>Math.abs(x-ref)-Math.abs(y-ref));
+    const count=idx.filter(j=>pcOf(mel[j].m)===pcOf(n.m)).length;if(count>2&&n.b>1)return;
+    sugs.push({type:'pitch',i,m:c[0],text:`<b>${where(i)}</b>: ${NAMES[pcOf(n.m)]} → <b>${NAMES[pcOf(c[0])]}</b>`,why:`Әуен ${key.name} ладында. ${NAMES[pcOf(n.m)]} бұл ладқа кірмейді, көбіне дауыс жарты тонға ауытқиды.`});});
+  // 4. awkward lengths
+  mel.forEach((n,i)=>{if(n.b>=2&&Math.abs(n.b%1-.5)<1e-6){const nb=Math.round(n.b);sugs.push({type:'dur',i,b:nb,text:`<b>${where(i)}</b>: ұзақтығын ${Math.round(n.b*2)} қағыстан ${nb*2} қағысқа түзеу`,why:'Ұзын нотаның жарты қағысы көбіне артық не кем естіледі.'});}});
+  // 5. leading rest, unfinished last bar
+  if(mel.length&&mel[0].m==null)sugs.push({type:'lead',text:'Басындағы үзілісті алып тастау',why:'Әуен бірден басталсын.'});
+  const tb=mel.reduce((a,n)=>a+n.b,0)-(mel[0]&&mel[0].m==null?mel[0].b:0)+sugs.filter(x=>x.type==='dur').reduce((a,x)=>a+x.b-mel[x.i].b,0);const rem=(st.meter-(tb%st.meter))%st.meter;
+  if(rem>1e-6)sugs.push({type:'fill',b:rem,text:`Соңғы тактіні толтыру: соңғы нотаны ${Math.round(rem*2)} қағысқа ұзарту`,why:`Соңғы тактіде ${st.meter} үлестің ${st.meter-rem}-і ғана бар.`});
+  // 6. easier hand position
+  const base=posStats(st.shift);let bestS=null;for(let v=st.shift-5;v<=st.shift+5;v++){if(v===st.shift)continue;const ps=posStats(v);if(ps.out)continue;if(!bestS||ps.mean+ps.mx*.15<bestS.ps.mean+bestS.ps.mx*.15)bestS={v,ps};}
+  if(bestS&&(base.out>0||base.mean-bestS.ps.mean>=2||base.mx-bestS.ps.mx>=4)){const d=bestS.v-st.shift;
+    sugs.push({type:'shift',v:bestS.v,text:`Тонды ${d>0?'+':''}${d} жарты тонға жылжыту`,why:`Пернелер жеңілдейді: орташа ${base.mean.toFixed(1)}-перне орнына ${bestS.ps.mean.toFixed(1)}-перне, ең жоғарғысы ${base.mx} орнына ${bestS.ps.mx}.`});}
+  return{key,sugs};}
+function applySugs(list){const mel=st.melody.map(n=>({...n}));let shift=st.shift;
+  list.filter(x=>x.type==='pitch').forEach(x=>{mel[x.i].m=x.m;delete mel[x.i].fs;});
+  list.filter(x=>x.type==='dur').forEach(x=>{mel[x.i].b=x.b;});
+  list.filter(x=>x.type==='merge').sort((a,b)=>b.i-a.i).forEach(x=>{mel[x.into].b+=mel[x.i].b;mel.splice(x.i,1);});
+  if(list.some(x=>x.type==='lead')&&mel.length&&mel[0].m==null)mel.shift();
+  const f=list.find(x=>x.type==='fill');if(f&&mel.length)mel[mel.length-1].b+=f.b;
+  const sh=list.find(x=>x.type==='shift');if(sh){shift=sh.v;mel.forEach(n=>delete n.fs);}
+  return{mel,shift};}
+let review=null,undoSnap=null;
+function showPn(id){document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.pn===id)));['pnCheck','pnManual','pnYt'].forEach(x=>$('#'+x).hidden=x!==id);}
+document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-pn]');if(b)showPn(b.dataset.pn);});
+$('#assistBtn').onclick=()=>{if(checking)return;stopPlay();showPn('pnCheck');renderManual();review=teacherReview();const L=$('#shList');
+  const {key,sugs}=review;$('#shSum').textContent=`Әуен ${key.name} ладында. `+(sugs.length?`${sugs.length} ұсыныс бар, керегін белгіле.`:'Түзететін ештеңе таппадым.');
+  L.innerHTML=sugs.length?sugs.map((x,k)=>`<li><input type="checkbox" id="sg${k}" checked><label class="tx" for="sg${k}"><div>${x.text}</div><div class="why">${x.why}</div></label>${x.i!=null?`<button class="btn sm go" data-go="${x.i}">Көрсету</button>`:''}</li>`).join(''):'<li class="ok">Нота жақсы жазылған. Енді «Өзімді тексеру» арқылы ойнап көр.</li>';
+  $('#shApply').hidden=!sugs.length;$('#sheet').hidden=false;};
+function closeSheet(){$('#sheet').hidden=true;}
+$('#shClose').onclick=closeSheet;$('#shCancel').onclick=closeSheet;
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden)closeSheet();});
+$('#shList').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;closeSheet();const i=+b.dataset.go;const el=document.querySelector(`.col[data-i="${i}"]`);
+  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
+  const p=pieces.find(q=>q.i===i);if(p&&p.pm!=null){ac();showOnNeck(p,null);showStroke(p,0);hwBeat=p.start;drawStage(hwBeat);const last=[null,null];hit(ctx.currentTime+.02,p.pm,.9,last,p.s);}});
+$('#shApply').onclick=()=>{if(!review)return;const chosen=review.sugs.filter((x,k)=>$('#sg'+k)&&$('#sg'+k).checked);closeSheet();if(!chosen.length)return;
+  undoSnap={melody:st.melody.map(n=>({...n})),shift:st.shift};const r=applySugs(chosen);st.melody=r.mel;st.shift=r.shift;st.sel=-1;invalidate();render();
+  teacher(`Нотаны түзеттім: ${chosen.length} өзгеріс. Тыңдап көр, ұнамаса қайтарып берем.`,[['▶ Тыңдау',()=>startPlay(),'primary'],['Болдырмау',()=>{if(!undoSnap)return;stopPlay();st.melody=undoSnap.melody;st.shift=undoSnap.shift;undoSnap=null;invalidate();render();teacher('Бұрынғы нотаны қайтардым.');}]]);
+  $('#chat').scrollIntoView({behavior:'smooth',block:'center'});};
+
+/* ---------- manual entry ---------- */
+let mSeq=[],mCount=2;
+function buildFrets(){const str=TUNINGS[st.tune];[[1,'#mHi'],[0,'#mLo']].forEach(([s,id])=>{let h=`<span class="sl">${s?hiName():'Ре'}</span>`;
+  for(let f=0;f<=MAXF;f++)h+=`<button class="fb${f?'':' open'}" data-s="${s}" data-f="${f}" aria-label="${s?hiName():'Ре'} ішегі, ${f}-перне">${f}</button>`;$(id).innerHTML=h;});}
+function renderManual(){buildFrets();const str=TUNINGS[st.tune],hn=hiName();
+  $('#mSeq').innerHTML=mSeq.length?mSeq.map(n=>n.m==null?`<span class="mc rest">үзіліс ×${Math.round(n.b*2)}</span>`:`<span class="mc">${n.fs?hn:'Ре'}·${n.m-str[n.fs]} ×${Math.round(n.b*2)}</span>`).join(''):'<span class="empty">Әзірге бос. Төмендегі пернелерді бас.</span>';
+  $('#mMsg').textContent=mSeq.length?`${mSeq.filter(n=>n.m!=null).length} нота, ${mSeq.reduce((a,n)=>a+n.b,0)} үлес`:'';}
+$('#mCnt').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;mCount=+b.dataset.c;document.querySelectorAll('#mCnt button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
+document.querySelector('.fretpick').addEventListener('click',e=>{const b=e.target.closest('.fb');if(!b)return;const s=+b.dataset.s,f=+b.dataset.f,m=TUNINGS[st.tune][s]+f;
+  mSeq.push({m,b:mCount/2,fs:s});ac();const last=[null,null];hit(ctx.currentTime+.01,m,.9,last,s,false);renderManual();const q=$('#mSeq');q.scrollTop=q.scrollHeight;});
+$('#mRest').onclick=()=>{mSeq.push({m:null,b:mCount/2});renderManual();};
+$('#mBack').onclick=()=>{mSeq.pop();renderManual();};
+$('#mClear').onclick=()=>{mSeq=[];renderManual();};
+$('#mLoad').onclick=()=>{compute();mSeq=[];pieces.forEach(p=>{if(p.cont&&mSeq.length){mSeq[mSeq.length-1].b+=p.b;return;}mSeq.push(p.pm==null?{m:null,b:p.b}:{m:p.pm,b:p.b,fs:p.s});});renderManual();};
+$('#mParse').onclick=()=>{const str=TUNINGS[st.tune],out=[],bad=[];
+  $('#mText').value.toLowerCase().replace(/\|/g,' ').split(/[\s,]+/).filter(Boolean).forEach(tk=>{const m=tk.match(/^(-|[рrжсслsl])(\d{0,2})(?:\*(\d+))?$/);
+    if(!m){bad.push(tk);return;}const cnt=m[3]?+m[3]:1;if(m[1]==='-'){out.push({m:null,b:cnt/2});return;}const s='рr'.includes(m[1])?0:1,f=+(m[2]||0);if(f>MAXF){bad.push(tk);return;}out.push({m:str[s]+f,b:cnt/2,fs:s});});
+  if(bad.length){$('#mMsg').textContent='Түсінбедім: '+bad.slice(0,4).join(', ');return;}mSeq=out;renderManual();};
+$('#mApply').onclick=()=>{if(!mSeq.some(n=>n.m!=null)){$('#mMsg').textContent='Алдымен нота енгіз.';return;}closeSheet();stopPlay();
+  undoSnap={melody:st.melody.map(n=>({...n})),shift:st.shift};st.melody=mSeq.map(n=>({...n}));st.shift=0;st.sel=-1;st.source='Қолмен енгізілген';invalidate();render();
+  teacher(`Қолмен енгізілген ${st.melody.filter(n=>n.m!=null).length} нотаны жаздым.`,[['▶ Тыңдау',()=>startPlay(),'primary'],['Болдырмау',()=>{if(!undoSnap)return;stopPlay();st.melody=undoSnap.melody;st.shift=undoSnap.shift;undoSnap=null;invalidate();render();teacher('Бұрынғы нотаны қайтардым.');}]]);
+  $('#stage').scrollIntoView({behavior:'smooth',block:'center'});};
+
+/* ---------- YouTube: open the video, listen to its sound, turn it into notes ---------- */
+function ytId(u){u=(u||'').trim();const m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/))([A-Za-z0-9_-]{11})/)||u.match(/^([A-Za-z0-9_-]{11})$/);return m?m[1]:null;}
+function ytStart(){const v=($('#ytStart').value||'').trim();if(!v)return 0;const p=v.split(':').map(Number);if(p.some(isNaN))return 0;return p.length===2?p[0]*60+p[1]:p[0];}
+const embedOK=window.self===window.top;
+$('#ytShow').onclick=()=>{const id=ytId($('#ytUrl').value);if(!id){$('#ytMsg').textContent='Сілтеме танылмады. youtube.com/watch?v=… немесе youtu.be/… түріндегі сілтемені қой.';return;}
+  const st0=ytStart();const a=$('#ytOpen');a.href=`https://www.youtube.com/watch?v=${id}${st0?'&t='+st0+'s':''}`;a.hidden=false;
+  if(embedOK){$('#ytBox').hidden=false;$('#ytBox').innerHTML=`<iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/${id}?start=${st0}&rel=0&playsinline=1&enablejsapi=1${/^https?:/.test(location.protocol)?'&origin='+encodeURIComponent(location.origin):''}" title="YouTube" allow="autoplay; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+    $('#ytMsg').textContent='Бейне ашылды. Енді төмендегі батырмалардың бірін басып, бейнені ойнат. Бейне мұнда ойнамаса, «YouTube-та жаңа бетте ашу» батырмасын бас.';}
+  else $('#ytMsg').textContent='Бұл бетте бейне ашылмайды. «YouTube-та жаңа бетте ашу» батырмасын басып, бейнені ойнат, сосын «Микрофонмен тыңдау» батырмасын бас.';
+  if(location.protocol==='file:')$('#ytMsg').textContent='Ескерту: компьютердегі файлдан ашқанда YouTube бейнесі көбіне ойнамайды (YouTube сайт мекенжайын талап етеді). Сайтқа (Netlify) салынған нұсқада толық автоматты жұмыс істейді. Қазір «YouTube-та жаңа бетте ашу», сосын «Басқа қойындыдан тыңдау» батырмасын қолдан.';
+  return id;};
+let ytRec=null,ytState=-1;
+function ytCmd(func,args){const f=$('#ytFrame');if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:'command',func,args:args||[]}),'*');}
+window.addEventListener('message',e=>{if(!/youtube(-nocookie)?\.com$/.test((()=>{try{return new URL(e.origin).hostname}catch(_){return''}})()))return;let d;try{d=typeof e.data==='string'?JSON.parse(e.data):e.data;}catch(_){return;}
+  if(d&&d.info&&typeof d.info.playerState==='number')ytState=d.info.playerState;if(d&&d.event==='onStateChange')ytState=d.info;});
+async function captureTab(opts,onReady){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){$('#ytMsg').textContent='Бұл браузер дыбысты ұстай алмайды. Компьютердегі Chrome-ды қолдан немесе «Микрофонмен тыңдау» батырмасын бас.';return;}
+  ac();let ds;try{ds=await navigator.mediaDevices.getDisplayMedia(opts);}catch(e){$('#ytMsg').textContent='Рұқсат берілмеді. Қайта басып, «Бөлісу» батырмасын бас. «Қойынды дыбысын бөлісу» белгісі қосулы болсын.';return;}
+  const at=ds.getAudioTracks();ds.getVideoTracks().forEach(t=>t.stop());
+  if(!at.length){$('#ytMsg').textContent='Дыбыс келмеді. Қайта басып, «Қойынды дыбысын бөлісу» белгісін қос.';return;}
+  const stream=new MediaStream(at),chunks=[];ytRec=new MediaRecorder(stream);const t0=Date.now();const btn=opts.preferCurrentTab?$('#ytAuto'):$('#ytTab');const lbl=btn.textContent;
+  ytRec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  const iv=setInterval(()=>{const s=(Date.now()-t0)/1000;btn.textContent=`■ Тоқтату (${fmt(s)} / ${fmt(st.maxDur)})`;if((s>=st.maxDur||(opts.preferCurrentTab&&ytState===0&&s>2))&&ytRec.state==='recording')ytRec.stop();},250);
+  ytRec.onstop=async()=>{clearInterval(iv);at.forEach(t=>t.stop());btn.textContent=lbl;if(opts.preferCurrentTab)ytCmd('pauseVideo');
+    if(Date.now()-t0<1500){$('#ytMsg').textContent='Тым қысқа болды.';return;}closeSheet();const blob=new Blob(chunks,{type:ytRec.mimeType||'audio/webm'});const id=ytId($('#ytUrl').value);
+    handleAudio(await blob.arrayBuffer(),'YouTube'+(id?' · '+id:''),blob);$('#chat').scrollIntoView({behavior:'smooth',block:'center'});};
+  ytRec.start(250);if(onReady)onReady();}
+$('#ytAuto').onclick=async()=>{
+  if(ytRec&&ytRec.state==='recording'){ytRec.stop();return;}
+  if(!$('#ytFrame')){const id=$('#ytShow').onclick();if(!id)return;await new Promise(r=>setTimeout(r,1500));}
+  if(!$('#ytFrame')){return;}
+  const f=$('#ytFrame');try{f.contentWindow.postMessage(JSON.stringify({event:'listening',id:'yt'}),'*');}catch(_){}
+  $('#ytMsg').textContent='«Осы қойынды» таңдаулы тұр, «Бөлісу» батырмасын бас.';
+  await captureTab({video:true,audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,suppressLocalAudioPlayback:false},preferCurrentTab:true,selfBrowserSurface:'include',systemAudio:'include'},
+    ()=>{ytState=-1;ytCmd('seekTo',[ytStart(),true]);ytCmd('playVideo');$('#ytMsg').textContent=`Тыңдап тұрмын. Бейне өзі ойнайды, ${fmt(st.maxDur)} соң не бейне біткенде өзі тоқтайды.`;});};
+$('#ytTab').onclick=async()=>{if(ytRec&&ytRec.state==='recording'){ytRec.stop();return;}$('#ytMsg').textContent='YouTube ашық тұрған қойындыны таңда да, «Қойынды дыбысын бөлісу» белгісін қос.';await captureTab({video:true,audio:true,selfBrowserSurface:'exclude'},()=>{$('#ytMsg').textContent='Тыңдап тұрмын. YouTube-та бейнені ойнат, біткенде «Тоқтату» батырмасын бас.';});};
+$('#ytMic').onclick=async()=>{closeSheet();$('#chat').scrollIntoView({behavior:'smooth',block:'center'});const ok=await startRec();if(ok){locked=true;recUI(true);teacher('Тыңдап тұрмын. Бейнені қатты қосып, телефонды динамикке жақындат. Біткенде көрсеткі батырмасын бас.');}};
+
+/* ---------- start ---------- */
+drawNeck();render();
+teacher('Сәлем! Мен домбыра ұстазыңмын. Микрофонды <b>басып тұрып</b> әуенді «ля-ля» деп айт, жіберу үшін саусағыңды жібер. Не болмаса қыстырғыш арқылы WhatsApp-тағы дауыстық хабарды жібер.');
+teacher('Әзірге мысал әуен тұр. Тыңдап көр:',[['▶ Мысалды тыңда',()=>{if(st.source!=='Мысал әуен')loadSample();startPlay();},'primary']]);
+})();
+</script>
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");</script></body></html>
