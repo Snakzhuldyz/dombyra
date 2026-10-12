@@ -1,4 +1,4 @@
-<!doctype html><html lang="kk"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0c1a25"><link rel="apple-touch-icon" href="icon-192.png"></head><body><title>Домбыра этюды</title>
+<!doctype html><html lang="kk"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0c1a25"><meta name="apple-mobile-web-app-title" content="Ақылды домбыра"><meta name="application-name" content="Ақылды домбыра"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="apple-touch-icon" href="icon-192.png"></head><body><title>Ақылды домбыра</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=PT+Mono&family=PT+Sans:wght@400;700&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
@@ -245,7 +245,7 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
 <div class="wrap">
   <header class="hero">
     <div>
-      <h1>Домбыра <em>этюды</em></h1>
+      <h1>Ақылды <em>домбыра</em></h1>
       <p>Әуенді айтып жібер, мен оны домбыраның цифрлық нотасына айналдырып, қай пернені қай саусақпен басу керегін көрсетемін. Сосын ойнап көр, қатеңді айтамын.</p>
       <div class="facts"><span>19 перне</span><span>2 ішек</span><span>цифрлық нота</span><span>қағыс ↓↑</span></div>
     </div>
@@ -257,7 +257,7 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
   <section class="card" aria-label="Әуенді жіберу">
     <div class="card-h">
       <span class="step">1</span><h2>Әуенді жібер</h2>
-      <div class="seg" id="durSeg" role="group" aria-label="Ұзақтығы"><button data-d="60">1 минут</button><button data-d="180">3 минут</button></div>
+      <div class="seg" id="durSeg" role="group" aria-label="Ұзақтығы"><button data-d="60">1 мин</button><button data-d="120">2 мин</button><button data-d="180">3 мин</button><button data-d="240">4 мин</button></div>
     </div>
     <div class="chat" id="chat" aria-live="polite"></div>
     <div class="composer" id="composer">
@@ -360,9 +360,9 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
 <button class="assist" id="assistBtn" aria-label="Ұстаз көмегі: нотаны тексеріп, түзетуді ұсынады"><span class="ava"><svg viewBox="0 0 400 1200"><use href="#dombyra"/></svg></span><span>Ұстаз көмегі</span></button>
 <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Ұстаз ұсыныстары">
   <div class="sheet-in">
-    <div class="sheet-h"><div class="ava"><svg viewBox="0 0 400 1200"><use href="#dombyra"/></svg></div><div><b>Ұстаз көмегі</b><div class="muted small">Нотаны тексеру, қолмен енгізу, YouTube-тан тыңдау</div></div>
+    <div class="sheet-h"><div class="ava"><svg viewBox="0 0 400 1200"><use href="#dombyra"/></svg></div><div><b>Ұстаз көмегі</b><div class="muted small">Нотаны тексеру, қолмен енгізу, музыка файлын нотаға айналдыру</div></div>
       <button class="cbtn" id="shClose" aria-label="Жабу"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-    <div class="tabs" role="tablist"><button role="tab" data-pn="pnCheck" aria-selected="true">Тексеру</button><button role="tab" data-pn="pnManual" aria-selected="false">Қолмен енгізу</button><button role="tab" data-pn="pnYt" aria-selected="false">YouTube</button></div>
+    <div class="tabs" role="tablist"><button role="tab" data-pn="pnCheck" aria-selected="true">Тексеру</button><button role="tab" data-pn="pnManual" aria-selected="false">Қолмен енгізу</button><button role="tab" data-pn="pnFile" aria-selected="false">Музыка файлы</button></div>
     <div class="pn" id="pnCheck">
       <div class="muted" id="shSum"></div>
       <ul class="sugs" id="shList"></ul>
@@ -381,14 +381,16 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
       </details>
       <div class="row"><button class="btn primary" id="mApply">Нотаға қолдану</button><span class="muted small" id="mMsg"></span></div>
     </div>
-    <div class="pn" id="pnYt" hidden>
-      <span class="muted small">YouTube сілтемесін қой. Бейнені ойнатып, бағдарлама сол дыбысты тыңдап нотаға айналдырады. Бір ғана әуен анық естілетін бейне жақсы шығады: домбыра күйі, ән, сыбызғы. Оркестр мен барабаны бар әнде қате көп болады.</span>
-      <div class="row"><input class="field" id="ytUrl" style="flex:1" placeholder="https://www.youtube.com/watch?v=..." inputmode="url"><input class="field" id="ytStart" style="width:84px" placeholder="0:00" aria-label="Басталу уақыты"><button class="btn" id="ytShow">Ашу</button></div>
-      <div class="ytbox" id="ytBox" hidden></div>
-      <a class="btn sm" id="ytOpen" href="#" target="_blank" rel="noopener" hidden>YouTube-та жаңа бетте ашу</a>
-      <button class="btn wood big" id="ytAuto">▶ Автоматты тыңдап, нотаға айналдыру</button>
-      <div class="row"><button class="btn sm" id="ytTab">Басқа қойындыдан тыңдау</button><button class="btn sm" id="ytMic">Микрофонмен тыңдау</button></div>
-      <span class="muted small" id="ytMsg">Компьютерде (Chrome): сілтемені қойып, «Автоматты тыңдау» батырмасын бас. Бір рет «Бөлісу» деп растайсың, қалғанын бағдарлама өзі жасайды: бейнені қосады, тыңдайды, тоқтатады, нотаға айналдырады. Телефонда: «Микрофонмен тыңдау».</span>
+    <div class="pn" id="pnFile" hidden>
+      <span class="muted small">1–4 минуттық музыка файлын жүкте (mp3, m4a, wav, ogg, WhatsApp аудио). Қай жерінен бастап, неше минутын нотаға айналдыру керегін таңда.</span>
+      <label class="btn primary big" for="fFile" style="justify-content:center">Музыка файлын таңдау</label>
+      <input id="fFile" type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.opus,.aac,.flac" hidden>
+      <div id="fInfo" class="muted small">Файл таңдалмаған.</div>
+      <div id="fVoice"></div>
+      <div class="row"><span class="lbl">Басталуы</span><input class="field" id="fStart" style="width:90px" value="0:00" aria-label="Басталу уақыты"><span class="lbl">Ұзақтығы</span><div class="seg" id="fDur"><button data-d="60">1 мин</button><button data-d="120">2 мин</button><button data-d="180">3 мин</button><button data-d="240" aria-pressed="true">4 мин</button></div></div>
+      <label class="tog"><input type="checkbox" id="fFilter" checked> Әуенді бөліп алу (бас пен барабан дыбысын азайту)</label>
+      <button class="btn wood big" id="fGo" disabled>Нотаға айналдыру</button>
+      <span class="muted small" id="fMsg">Бір әуен анық естілетін музыка жақсы шығады: домбыра күйі, ән, сыбызғы, қобыз. Көп аспапты әнде нотаны «Тексеру» бөлімімен түзеткен жөн.</span>
     </div>
   </div>
 </div>
@@ -600,7 +602,7 @@ $('#editor').addEventListener('click',e=>{const b=e.target.closest('[data-ed]');
   if(a!=='close'&&a!=='str')invalidate();stopPlay();render();});
 
 /* ---------- controls ---------- */
-$('#durSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||recOn)return;st.maxDur=+b.dataset.d;render();teacher(`Жақсы, ${st.maxDur/60} минутқа дейін жазамын.`);});
+$('#durSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||recOn)return;st.maxDur=+b.dataset.d;render();teacher(`Жақсы, ${st.maxDur/60} минутқа дейін тыңдаймын.`);});
 $('#tempoSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||checking)return;st.tempo=+b.dataset.t;restartIfPlaying();render();});
 $('#tempo').addEventListener('input',e=>{st.tempo=+e.target.value;$('#tempoVal').textContent='♩ = '+st.tempo;document.querySelectorAll('#tempoSeg button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.t===st.tempo)));});
 $('#tempo').addEventListener('change',()=>{restartIfPlaying();render();});
@@ -722,23 +724,25 @@ mic.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDef
 $('#binBtn').onclick=()=>{stopRec(false);teacher('Жазба өшірілді.');};
 $('#file').onchange=async e=>{const f=e.target.files[0];if(!f)return;e.target.value='';ac();stopPlay();handleAudio(await f.arrayBuffer(),f.name);};
 
-async function handleAudio(ab,name,blob){let dec;
-  try{dec=await ctx.decodeAudioData(ab.slice(0));}catch(e){teacher('Бұл файлды аша алмадым. mp3, m4a, ogg немесе wav түріндегі аудио жібер.',null,true);return;}
+async function handleAudio(ab,name,blob,opt){let dec;opt=opt||{};
+  if(opt.dec)dec=opt.dec;else{try{dec=await ctx.decodeAudioData(ab.slice(0));}catch(e){teacher('Бұл файлды аша алмадым. mp3, m4a, ogg немесе wav түріндегі аудио жібер.',null,true);return;}}
   voiceMsg(dec,name,blob);const wait=teacher('Тыңдап жатырмын…');
-  const r=await analyzeMelody(dec,p=>{wait.querySelector('.bub>div:nth-child(2)').textContent='Тыңдап жатырмын… '+Math.round(p*100)+'%';});
+  const r=await analyzeMelody(dec,opt,p=>{wait.querySelector('.bub>div:nth-child(2)').textContent='Тыңдап жатырмын… '+Math.round(p*100)+'%';});
   wait.remove();
   if(r.error){teacher(r.error,null,true);return;}
   st.source=name||'Дауыстық хабар';render();
   teacher(`Тамаша! <b>${r.count}</b> нота таптым, сенің қарқының ♩ = ${st.tempo}. Цифрлық нотасын жаздым, домбырада қайда басу керегін көрсетемін.`,
     [['▶ Домбырамен тыңда',()=>startPlay(),'primary'],['Нотаны көру',()=>$('#tab').scrollIntoView({behavior:'smooth',block:'center'})],['Өзімді тексеру',()=>$('#checkBtn').scrollIntoView({behavior:'smooth',block:'center'})]]);}
 
-async function toMono(dec,maxDur){const dur=Math.min(dec.duration,maxDur);
-  const off=new OfflineAudioContext(1,Math.max(1,Math.ceil(dur*SR)),SR);const sn=off.createBufferSource();sn.buffer=dec;sn.connect(off.destination);sn.start();
+async function toMono(dec,maxDur,start,filter){start=start||0;const dur=Math.max(.1,Math.min(dec.duration-start,maxDur));
+  const off=new OfflineAudioContext(1,Math.max(1,Math.ceil(dur*SR)),SR);const sn=off.createBufferSource();sn.buffer=dec;
+  if(filter){const hp=off.createBiquadFilter();hp.type='highpass';hp.frequency.value=140;hp.Q.value=.8;const lp=off.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2200;sn.connect(hp);hp.connect(lp);lp.connect(off.destination);}else sn.connect(off.destination);
+  sn.start(0,start);
   return (await off.startRendering()).getChannelData(0);}
 
 /* ---------- melody: YIN pitch tracking + note segmentation ---------- */
-async function analyzeMelody(dec,progress){
-  const x0=await toMono(dec,st.maxDur);let peak=0;for(let i=0;i<x0.length;i++){const a=Math.abs(x0[i]);if(a>peak)peak=a;}
+async function analyzeMelody(dec,opt,progress){opt=opt||{};
+  const x0=await toMono(dec,opt.dur||st.maxDur,opt.start||0,!!opt.filter);let peak=0;for(let i=0;i<x0.length;i++){const a=Math.abs(x0[i]);if(a>peak)peak=a;}
   const x=new Float32Array(x0.length);const gn=peak>1e-5?.9/peak:1;for(let i=0;i<x0.length;i++)x[i]=x0[i]*gn;let voiced=0;
   const W=512,HOP=320,TMIN=Math.floor(SR/900),TMAX=Math.floor(SR/70),FR=Math.floor((x.length-W-TMAX)/HOP);
   if(FR<10)return{error:'Жазба тым қысқа. Кемінде 5 секунд жаз.'};
@@ -765,7 +769,7 @@ async function analyzeMelody(dec,progress){
   for(let i=0;i<FR;i++){const v=sm[i];
     if(isNaN(v)){close();continue;}
     if(cur){const m=med(cur.v);const lo=Math.max(cur.s+3,i-4);const minR=lo<i?Math.min(...Array.from(rms.slice(lo,i))):Infinity;
-      const onset=cur.v.length>=6&&rms[i]>minR*1.7&&rms[i]>gate*1.5;
+      const onset=cur.v.length>=6&&rms[i]>minR*1.45&&rms[i]>gate*1.5;
       if(Math.abs(v-m)<.75&&!onset){cur.v.push(v);continue;}close();}
     cur={s:i,v:[v]};}
   close();
@@ -923,7 +927,7 @@ function applySugs(list){const mel=st.melody.map(n=>({...n}));let shift=st.shift
   const sh=list.find(x=>x.type==='shift');if(sh){shift=sh.v;mel.forEach(n=>delete n.fs);}
   return{mel,shift};}
 let review=null,undoSnap=null;
-function showPn(id){document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.pn===id)));['pnCheck','pnManual','pnYt'].forEach(x=>$('#'+x).hidden=x!==id);}
+function showPn(id){document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.pn===id)));['pnCheck','pnManual','pnFile'].forEach(x=>$('#'+x).hidden=x!==id);}
 document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-pn]');if(b)showPn(b.dataset.pn);});
 $('#assistBtn').onclick=()=>{if(checking)return;stopPlay();showPn('pnCheck');renderManual();review=teacherReview();const L=$('#shList');
   const {key,sugs}=review;$('#shSum').textContent=`Әуен ${key.name} ладында. `+(sugs.length?`${sugs.length} ұсыныс бар, керегін белгіле.`:'Түзететін ештеңе таппадым.');
@@ -964,43 +968,17 @@ $('#mApply').onclick=()=>{if(!mSeq.some(n=>n.m!=null)){$('#mMsg').textContent='�
   teacher(`Қолмен енгізілген ${st.melody.filter(n=>n.m!=null).length} нотаны жаздым.`,[['▶ Тыңдау',()=>startPlay(),'primary'],['Болдырмау',()=>{if(!undoSnap)return;stopPlay();st.melody=undoSnap.melody;st.shift=undoSnap.shift;undoSnap=null;invalidate();render();teacher('Бұрынғы нотаны қайтардым.');}]]);
   $('#stage').scrollIntoView({behavior:'smooth',block:'center'});};
 
-/* ---------- YouTube: open the video, listen to its sound, turn it into notes ---------- */
-function ytId(u){u=(u||'').trim();const m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/))([A-Za-z0-9_-]{11})/)||u.match(/^([A-Za-z0-9_-]{11})$/);return m?m[1]:null;}
-function ytStart(){const v=($('#ytStart').value||'').trim();if(!v)return 0;const p=v.split(':').map(Number);if(p.some(isNaN))return 0;return p.length===2?p[0]*60+p[1]:p[0];}
-const embedOK=window.self===window.top;
-$('#ytShow').onclick=()=>{const id=ytId($('#ytUrl').value);if(!id){$('#ytMsg').textContent='Сілтеме танылмады. youtube.com/watch?v=… немесе youtu.be/… түріндегі сілтемені қой.';return;}
-  const st0=ytStart();const a=$('#ytOpen');a.href=`https://www.youtube.com/watch?v=${id}${st0?'&t='+st0+'s':''}`;a.hidden=false;
-  if(embedOK){$('#ytBox').hidden=false;$('#ytBox').innerHTML=`<iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/${id}?start=${st0}&rel=0&playsinline=1&enablejsapi=1${/^https?:/.test(location.protocol)?'&origin='+encodeURIComponent(location.origin):''}" title="YouTube" allow="autoplay; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
-    $('#ytMsg').textContent='Бейне ашылды. Енді төмендегі батырмалардың бірін басып, бейнені ойнат. Бейне мұнда ойнамаса, «YouTube-та жаңа бетте ашу» батырмасын бас.';}
-  else $('#ytMsg').textContent='Бұл бетте бейне ашылмайды. «YouTube-та жаңа бетте ашу» батырмасын басып, бейнені ойнат, сосын «Микрофонмен тыңдау» батырмасын бас.';
-  if(location.protocol==='file:')$('#ytMsg').textContent='Ескерту: компьютердегі файлдан ашқанда YouTube бейнесі көбіне ойнамайды (YouTube сайт мекенжайын талап етеді). Сайтқа (Netlify) салынған нұсқада толық автоматты жұмыс істейді. Қазір «YouTube-та жаңа бетте ашу», сосын «Басқа қойындыдан тыңдау» батырмасын қолдан.';
-  return id;};
-let ytRec=null,ytState=-1;
-function ytCmd(func,args){const f=$('#ytFrame');if(f&&f.contentWindow)f.contentWindow.postMessage(JSON.stringify({event:'command',func,args:args||[]}),'*');}
-window.addEventListener('message',e=>{if(!/youtube(-nocookie)?\.com$/.test((()=>{try{return new URL(e.origin).hostname}catch(_){return''}})()))return;let d;try{d=typeof e.data==='string'?JSON.parse(e.data):e.data;}catch(_){return;}
-  if(d&&d.info&&typeof d.info.playerState==='number')ytState=d.info.playerState;if(d&&d.event==='onStateChange')ytState=d.info;});
-async function captureTab(opts,onReady){
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){$('#ytMsg').textContent='Бұл браузер дыбысты ұстай алмайды. Компьютердегі Chrome-ды қолдан немесе «Микрофонмен тыңдау» батырмасын бас.';return;}
-  ac();let ds;try{ds=await navigator.mediaDevices.getDisplayMedia(opts);}catch(e){$('#ytMsg').textContent='Рұқсат берілмеді. Қайта басып, «Бөлісу» батырмасын бас. «Қойынды дыбысын бөлісу» белгісі қосулы болсын.';return;}
-  const at=ds.getAudioTracks();ds.getVideoTracks().forEach(t=>t.stop());
-  if(!at.length){$('#ytMsg').textContent='Дыбыс келмеді. Қайта басып, «Қойынды дыбысын бөлісу» белгісін қос.';return;}
-  const stream=new MediaStream(at),chunks=[];ytRec=new MediaRecorder(stream);const t0=Date.now();const btn=opts.preferCurrentTab?$('#ytAuto'):$('#ytTab');const lbl=btn.textContent;
-  ytRec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
-  const iv=setInterval(()=>{const s=(Date.now()-t0)/1000;btn.textContent=`■ Тоқтату (${fmt(s)} / ${fmt(st.maxDur)})`;if((s>=st.maxDur||(opts.preferCurrentTab&&ytState===0&&s>2))&&ytRec.state==='recording')ytRec.stop();},250);
-  ytRec.onstop=async()=>{clearInterval(iv);at.forEach(t=>t.stop());btn.textContent=lbl;if(opts.preferCurrentTab)ytCmd('pauseVideo');
-    if(Date.now()-t0<1500){$('#ytMsg').textContent='Тым қысқа болды.';return;}closeSheet();const blob=new Blob(chunks,{type:ytRec.mimeType||'audio/webm'});const id=ytId($('#ytUrl').value);
-    handleAudio(await blob.arrayBuffer(),'YouTube'+(id?' · '+id:''),blob);$('#chat').scrollIntoView({behavior:'smooth',block:'center'});};
-  ytRec.start(250);if(onReady)onReady();}
-$('#ytAuto').onclick=async()=>{
-  if(ytRec&&ytRec.state==='recording'){ytRec.stop();return;}
-  if(!$('#ytFrame')){const id=$('#ytShow').onclick();if(!id)return;await new Promise(r=>setTimeout(r,1500));}
-  if(!$('#ytFrame')){return;}
-  const f=$('#ytFrame');try{f.contentWindow.postMessage(JSON.stringify({event:'listening',id:'yt'}),'*');}catch(_){}
-  $('#ytMsg').textContent='«Осы қойынды» таңдаулы тұр, «Бөлісу» батырмасын бас.';
-  await captureTab({video:true,audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,suppressLocalAudioPlayback:false},preferCurrentTab:true,selfBrowserSurface:'include',systemAudio:'include'},
-    ()=>{ytState=-1;ytCmd('seekTo',[ytStart(),true]);ytCmd('playVideo');$('#ytMsg').textContent=`Тыңдап тұрмын. Бейне өзі ойнайды, ${fmt(st.maxDur)} соң не бейне біткенде өзі тоқтайды.`;});};
-$('#ytTab').onclick=async()=>{if(ytRec&&ytRec.state==='recording'){ytRec.stop();return;}$('#ytMsg').textContent='YouTube ашық тұрған қойындыны таңда да, «Қойынды дыбысын бөлісу» белгісін қос.';await captureTab({video:true,audio:true,selfBrowserSurface:'exclude'},()=>{$('#ytMsg').textContent='Тыңдап тұрмын. YouTube-та бейнені ойнат, біткенде «Тоқтату» батырмасын бас.';});};
-$('#ytMic').onclick=async()=>{closeSheet();$('#chat').scrollIntoView({behavior:'smooth',block:'center'});const ok=await startRec();if(ok){locked=true;recUI(true);teacher('Тыңдап тұрмын. Бейнені қатты қосып, телефонды динамикке жақындат. Біткенде көрсеткі батырмасын бас.');}};
+/* ---------- music file (1–4 minutes) ---------- */
+let fDec=null,fName='',fBlob=null,fDurSel=240;
+function parseTime(v){v=(v||'').trim();if(!v)return 0;const p=v.split(':').map(Number);if(p.some(isNaN))return 0;return p.length===2?p[0]*60+p[1]:p[0];}
+$('#fDur').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b)return;fDurSel=+b.dataset.d;document.querySelectorAll('#fDur button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
+$('#fFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;ac();$('#fInfo').textContent='Ашылып жатыр…';
+  try{const ab=await f.arrayBuffer();fDec=await ctx.decodeAudioData(ab.slice(0));fName=f.name;fBlob=f;}catch(err){fDec=null;$('#fInfo').textContent='Бұл файлды аша алмадым. mp3, m4a, wav немесе ogg түрінде жүкте.';$('#fGo').disabled=true;return;}
+  const d=fDec.duration;$('#fInfo').innerHTML=`<b>${esc(f.name)}</b> · ${fmt(d)}`+(d>240?' · 4 минуттан ұзын, таңдалған бөлігі ғана алынады':'');
+  const v=$('#fVoice');v.innerHTML='';v.appendChild(voiceEl(fDec,''));$('#fGo').disabled=false;};
+$('#fGo').onclick=async()=>{if(!fDec)return;const start=Math.min(parseTime($('#fStart').value),Math.max(0,fDec.duration-5));const dur=Math.min(fDurSel,fDec.duration-start);
+  if(dur<5){$('#fMsg').textContent='Таңдалған бөлік тым қысқа.';return;}closeSheet();stopVoice();$('#chat').scrollIntoView({behavior:'smooth',block:'center'});
+  handleAudio(null,`${fName} (${fmt(start)}–${fmt(start+dur)})`,null,{dec:fDec,start,dur,filter:$('#fFilter').checked});};
 
 /* ---------- start ---------- */
 drawNeck();render();
