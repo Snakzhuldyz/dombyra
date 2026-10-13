@@ -753,11 +753,33 @@ async function toMono(dec,maxDur,start,filter){start=start||0;const dur=Math.max
 async function analyzeMelody(dec,opt,progress){opt=opt||{};
   const x0=await toMono(dec,opt.dur||st.maxDur,opt.start||0,!!opt.filter);let peak=0;for(let i=0;i<x0.length;i++){const a=Math.abs(x0[i]);if(a>peak)peak=a;}
   const x=new Float32Array(x0.length);const gn=peak>1e-5?.9/peak:1;for(let i=0;i<x0.length;i++)x[i]=x0[i]*gn;let voiced=0;
-  const W=512,HOP=320,TMIN=Math.floor(SR/900),TMAX=Math.floor(SR/70),FR=Math.floor((x.length-W-TMAX)/HOP);
+  let FR,rms,sm,hopS,gate;
+  if(opt.music){
+    /* music with accompaniment: predominant-melody tracking (harmonic salience + Viterbi path) */
+    const S=await salience(x,p=>progress(p*.85),2048,256,true);if(!S)return{error:'Жазба тым қысқа.'};
+    FR=S.F;rms=S.rms;hopS=S.hop;const lo=48,hi=88,K=hi-lo+1;
+    const srt=Array.from(rms).sort((a,b)=>a-b);gate=Math.max(.003,srt[Math.floor(FR*.95)]*.1);
+    const fmax=new Float32Array(FR);for(let f=0;f<FR;f++){let m=0;for(let k=0;k<K;k++){const v=S.sal[f*NM+lo+k-MLO];if(v>m)m=v;}fmax[f]=m;}
+    const sm2=Array.from(fmax).sort((a,b)=>a-b),vth=sm2[Math.floor(FR*.9)]*.22;
+    const vo=new Uint8Array(FR);for(let f=0;f<FR;f++)vo[f]=rms[f]>=gate&&fmax[f]>=vth?1:0;
+    sm=new Float32Array(FR).fill(NaN);let f=0;
+    while(f<FR){if(!vo[f]){f++;continue;}let e=f;while(e<FR&&vo[e])e++;
+      const n=e-f;let prev=new Float32Array(K),back=[];
+      for(let k=0;k<K;k++)prev[k]=Math.log(S.sal[f*NM+lo+k-MLO]/(fmax[f]||1)+1e-3);
+      for(let t=1;t<n;t++){const cur=new Float32Array(K),bk=new Int16Array(K),fr=f+t;
+        for(let k=0;k<K;k++){let best=-1e9,bj=k;for(let j=Math.max(0,k-12);j<=Math.min(K-1,k+12);j++){const v=prev[j]-.35*Math.min(Math.abs(k-j),7);if(v>best){best=v;bj=j;}}
+          cur[k]=best+Math.log(S.sal[fr*NM+lo+k-MLO]/(fmax[fr]||1)+1e-3);bk[k]=bj;}
+        back.push(bk);prev=cur;}
+      let k=0;for(let j=1;j<K;j++)if(prev[j]>prev[k])k=j;
+      for(let t=n-1;t>=0;t--){sm[f+t]=lo+k;voiced++;if(t>0)k=back[t-1][k];}
+      f=e;}
+    progress(.9);
+  }else{
+  const W=512,HOP=320,TMIN=Math.floor(SR/900),TMAX=Math.floor(SR/70);FR=Math.floor((x.length-W-TMAX)/HOP);hopS=HOP/SR;
   if(FR<10)return{error:'Жазба тым қысқа. Кемінде 5 секунд жаз.'};
-  const rms=new Float32Array(FR),pm=new Float32Array(FR).fill(NaN),d=new Float32Array(TMAX+1);
+  rms=new Float32Array(FR);const pm=new Float32Array(FR).fill(NaN),d=new Float32Array(TMAX+1);
   for(let fi=0;fi<FR;fi++){const o=fi*HOP;let e=0;for(let j=0;j<W;j++)e+=x[o+j]*x[o+j];rms[fi]=Math.sqrt(e/W);}
-  const sorted=Array.from(rms).sort((a,b)=>a-b),gate=Math.max(.003,sorted[Math.floor(FR*.95)]*.12);
+  const sorted=Array.from(rms).sort((a,b)=>a-b);gate=Math.max(.003,sorted[Math.floor(FR*.95)]*.12);
   for(let fi=0;fi<FR;fi++){
     if(fi%150===0){progress(fi/FR);await sleep();}
     if(rms[fi]<gate)continue;const o=fi*HOP;let run=0;d[0]=1;
@@ -767,18 +789,19 @@ async function analyzeMelody(dec,opt,progress){opt=opt||{};
     if(tau<0||tau>=TMAX)continue;voiced++;
     const a=d[tau-1],b=d[tau],c=tau+1<=TMAX?d[tau+1]:b,den=a+c-2*b,tt=den?tau+(a-c)/(2*den):tau;
     pm[fi]=69+12*Math.log2(SR/tt/440);}
-  const sm=new Float32Array(FR).fill(NaN);
+  sm=new Float32Array(FR).fill(NaN);
   for(let i=0;i<FR;i++){if(isNaN(pm[i]))continue;const w=[];for(let j=i-2;j<=i+2;j++)if(j>=0&&j<FR&&!isNaN(pm[j]))w.push(pm[j]);w.sort((a,b)=>a-b);sm[i]=w[w.length>>1];}
+  }
   const med=a=>{const s=a.slice().sort((p,q)=>p-q);return s[s.length>>1];};
   {const vi=[];for(let i=0;i<FR;i++)if(!isNaN(sm[i]))vi.push(i);
    for(let k=0;k<vi.length;k++){const w=[];for(let j=Math.max(0,k-12);j<=Math.min(vi.length-1,k+12);j++)w.push(sm[vi[j]]);const m=med(w),v=sm[vi[k]];
      if(Math.abs(v+12-m)<1.5)sm[vi[k]]=v+12;else if(Math.abs(v-12-m)<1.5)sm[vi[k]]=v-12;}}
-  const hop=HOP/SR,notes=[];let cur=null;
-  const close=()=>{if(cur&&cur.v.length>=3){const n=cur.v.length,a=Math.floor(n*.2),b=Math.max(a+1,Math.ceil(n*.85));notes.push({f:med(cur.v.slice(a,b)),s:cur.s*hop,e:(cur.s+n)*hop});}cur=null;};
+  const hop=hopS,notes=[];let cur=null;
+  const minF=Math.max(3,Math.round(.06/hop));const close=()=>{if(cur&&cur.v.length>=minF){const n=cur.v.length,a=Math.floor(n*.2),b=Math.max(a+1,Math.ceil(n*.85));notes.push({f:med(cur.v.slice(a,b)),s:cur.s*hop,e:(cur.s+n)*hop});}cur=null;};
   for(let i=0;i<FR;i++){const v=sm[i];
     if(isNaN(v)){close();continue;}
-    if(cur){const m=med(cur.v);const lo=Math.max(cur.s+3,i-4);const minR=lo<i?Math.min(...Array.from(rms.slice(lo,i))):Infinity;
-      const onset=cur.v.length>=6&&rms[i]>minR*1.45&&rms[i]>gate*1.5;
+    if(cur){const m=med(cur.v);const lo=Math.max(cur.s+Math.round(.06/hop),i-Math.round(.08/hop));const minR=lo<i?Math.min(...Array.from(rms.slice(lo,i))):Infinity;
+      const onset=cur.v.length>=Math.round(.12/hop)&&rms[i]>minR*1.45&&rms[i]>gate*1.5;
       if(Math.abs(v-m)<.75&&!onset){cur.v.push(v);continue;}close();}
     cur={s:i,v:[v]};}
   close();
@@ -796,7 +819,7 @@ async function analyzeMelody(dec,opt,progress){opt=opt||{};
   }
   if(notes.length<2){const lvl=peak<.02?'өте төмен (микрофонға жақынырақ айт)':peak<.1?'төмендеу':'жақсы';return{error:`Әуенді таба алмадым. Дыбыс деңгейі: ${lvl}. Әуенді бөліктер: ${Math.round(voiced/FR*100)}%. Тынышырақ жерде, «ля-ля» деп созып, анық айтып көр.`};}
   const seq=[];notes.forEach((n,k)=>{const nx=notes[k+1];if(!nx){seq.push({m:n.m,d:n.e-n.s});return;}
-    const gap=nx.s-n.e;if(gap>.2){seq.push({m:n.m,d:n.e-n.s});seq.push({m:null,d:gap});}else seq.push({m:n.m,d:nx.s-n.s});});
+    const gap=nx.s-n.e;if(gap>(opt.music?.45:.2)){seq.push({m:n.m,d:n.e-n.s});seq.push({m:null,d:gap});}else seq.push({m:n.m,d:nx.s-n.s});});
   const md=med(seq.filter(q=>q.m!=null).map(q=>q.d));let bu=md,be=Infinity;
   for(let u=md*.75;u<=md*1.3;u+=md*.01){let e=0;seq.forEach(q=>{const r=q.d/u*2;e+=Math.abs(r-Math.round(r))*(q.m==null?.5:1);});if(e<be){be=e;bu=u;}}
   while(60/bu>132)bu*=2;while(60/bu<50)bu/=2;
@@ -834,16 +857,17 @@ function fft(re,im){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(
   for(let len=2;len<=n;len<<=1){const ang=-2*Math.PI/len,wr=Math.cos(ang),wi=Math.sin(ang),h=len>>1;
     for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<h;j++){const a=i+j,b=a+h,tr=re[b]*cr-im[b]*ci,ti=re[b]*ci+im[b]*cr;re[b]=re[a]-tr;im[b]=im[a]-ti;re[a]+=tr;im[a]+=ti;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}}
 const MLO=36,MHI=100,NM=MHI-MLO+1;
-async function salience(x,progress){
-  const N=4096,H=512,F=Math.floor((x.length-N)/H)+1;if(F<4)return null;
+async function salience(x,progress,N,H,music){N=N||4096;H=H||512;
+  const F=Math.floor((x.length-N)/H)+1;if(F<4)return null;
   const win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/(N-1));
   const R=[];for(let m=MLO;m<=MHI;m++){const f0=440*Math.pow(2,(m-69)/12),a=[];for(let k=1;k<=6;k++){const f=f0*k;if(f>7600)break;a.push([Math.floor(f*.98/SR*N),Math.ceil(f*1.02/SR*N),1/Math.pow(k,.6)]);}R.push(a);}
-  const sal=new Float32Array(F*NM),rms=new Float32Array(F),re=new Float32Array(N),im=new Float32Array(N),mag=new Float32Array(N/2);
+  let avg=null;const sal=new Float32Array(F*NM),rms=new Float32Array(F),re=new Float32Array(N),im=new Float32Array(N),mag=new Float32Array(N/2);
   for(let fi=0;fi<F;fi++){
     if(fi%120===0){progress(fi/F);await sleep();}
     const o=fi*H;let e=0;for(let i=0;i<N;i++){re[i]=x[o+i]*win[i];im[i]=0;}
     for(let i=N/2-H;i<N/2+H;i++)e+=x[o+i]*x[o+i];rms[fi]=Math.sqrt(e/(2*H));
     fft(re,im);for(let i=0;i<N/2;i++)mag[i]=Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+    if(music){if(!avg)avg=new Float32Array(N/2);const al=1-Math.exp(-H/SR/1.2);for(let i=0;i<N/2;i++){const m=Math.sqrt(mag[i]);avg[i]+=al*(m-avg[i]);mag[i]=Math.max(0,m-.7*avg[i]);}}
     for(let m=0;m<NM;m++){let s=0;for(const [lo,hi,w] of R[m]){let mx=0;for(let b=lo;b<=hi;b++)if(mag[b]>mx)mx=mag[b];s+=w*mx;}sal[fi*NM+m]=s;}}
   return {sal,rms,F,hop:H/SR,half:N/2/SR};}
 async function runCheck(ab,mode,base){
@@ -987,7 +1011,7 @@ $('#fFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f
   const v=$('#fVoice');v.innerHTML='';v.appendChild(voiceEl(fDec,''));$('#fGo').disabled=false;};
 $('#fGo').onclick=async()=>{if(!fDec)return;const start=Math.min(parseTime($('#fStart').value),Math.max(0,fDec.duration-5));const dur=Math.min(fDurSel,fDec.duration-start);
   if(dur<5){$('#fMsg').textContent='Таңдалған бөлік тым қысқа.';return;}closeSheet();stopVoice();$('#chat').scrollIntoView({behavior:'smooth',block:'center'});
-  handleAudio(null,`${fName} (${fmt(start)}–${fmt(start+dur)})`,null,{dec:fDec,start,dur,filter:$('#fFilter').checked});};
+  handleAudio(null,`${fName} (${fmt(start)}–${fmt(start+dur)})`,null,{dec:fDec,start,dur,filter:$('#fFilter').checked,music:true});};
 
 /* ---------- start ---------- */
 drawNeck();render();
