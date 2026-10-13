@@ -621,6 +621,14 @@ function ac(){if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)(
   const conv=ctx.createConvolver();conv.normalize=true;conv.buffer=bodyIR();
   out.connect(hp);hp.connect(dry);dry.connect(comp);hp.connect(conv);conv.connect(wet);wet.connect(comp);comp.connect(ctx.destination);}
   if(ctx.state==='suspended')ctx.resume();return ctx;}
+/* make sound work on phones: iPhone silent switch, autoplay locks */
+let unlocked=false;
+function unlockAudio(){ac();if(unlocked)return;unlocked=true;
+  try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+  try{const a=new Audio('data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==');a.setAttribute('playsinline','');a.play().catch(()=>{});}catch(e){}
+  try{const b=ctx.createBuffer(1,1,22050),sn=ctx.createBufferSource();sn.buffer=b;sn.connect(ctx.destination);sn.start(0);}catch(e){}
+  if(ctx.state!=='running')ctx.resume().catch(()=>{});}
+['pointerdown','touchend','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 /* wooden body + small room: damped resonances of a dombyra soundboard and a short reverb tail */
 function bodyIR(){const sr=ctx.sampleRate,len=Math.floor(sr*.9),b=ctx.createBuffer(2,len,sr);
   const modes=[[108,.09,.55],[205,.07,.7],[292,.05,.4],[410,.045,.35],[610,.035,.28],[930,.025,.2],[1500,.018,.14],[2450,.012,.1],[3600,.008,.06]];
@@ -662,7 +670,8 @@ function schedule(T,b0,b1,notes,clicks){const str=TUNINGS[st.tune],last=[null,nu
       else hit(time,p.pm,gn,last,p.s,up);});});
   if(clicks)for(let b=Math.ceil(b0-1e-6);b<b1-1e-6;b++)click(T+b*beatDur,b%st.meter===0);}
 function setPlayUI(on){$('#playIco').innerHTML=on?STOP:PLAY;$('#sPlayIco').innerHTML=on?STOP:PLAY;$('#playBtn').setAttribute('aria-label',on?'Тоқтату':'Ойнату');}
-function startPlay(){if(!pieces.some(p=>p.pm!=null))return;ac();stopVoice();stopPlay();playing=true;fullPlay=true;setPlayUI(true);
+function startPlay(){if(!pieces.some(p=>p.pm!=null))return;ac();
+  if(ctx.state!=='running'){ctx.resume().then(()=>{if(ctx.state==='running')startPlay();else teacher('Дыбыс қосылмай тұр. Экранды бір рет басып, ▶ батырмасын қайта басыңыз. iPhone-да бүйірдегі дыбыссыз режим ажыратқышын өшіріңіз.',null,true);}).catch(()=>{});return;}stopVoice();stopPlay();playing=true;fullPlay=true;setPlayUI(true);
   beatDur=60/st.tempo;t0=ctx.currentTime+.15+st.meter*beatDur;playTo=totalBeats;
   for(let q=0;q<st.meter;q++)click(t0-(st.meter-q)*beatDur,q===0);
   schedule(t0,0,totalBeats,true,$('#metro').checked);if(stageOn()&&!document.fullscreenElement)$('#stage').scrollIntoView({behavior:'smooth',block:'center'});raf=requestAnimationFrame(tick);}
