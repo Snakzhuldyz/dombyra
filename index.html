@@ -135,6 +135,17 @@ details.settings summary{cursor:pointer;font-weight:700;color:var(--woodl)}
 .col.miss{--cb:#f8d7d3;box-shadow:inset 0 0 0 1.5px #c43b30}
 .col.now{--cb:#bfe6ea}
 .col.sel{outline:2px dashed #a8730f;outline-offset:-2px}
+.col.sc{grid-template-rows:16px 16px 24px 24px 22px 14px;width:28px;border-radius:4px}
+.col.sc .mk{text-align:center;font:700 12px var(--f-mono);color:#3a4a50;line-height:16px}
+.col.sc .str b{font-size:16px}
+.col.sc .str b.dz{color:#6b7a80;font-weight:400}
+.col.sc .stem{position:relative}
+.col.sc .stem i{position:absolute;left:50%;top:0;width:1.5px;height:18px;background:#1d2a30}
+.col.sc.b1 .stem::after,.col.sc.b2 .stem::after{content:"";position:absolute;bottom:4px;height:3px;background:#1d2a30}
+.col.sc.b1 .stem::after{left:50%;right:0}
+.col.sc.b2 .stem::after{left:0;right:50%}
+.col.sc .rs{display:block;text-align:center;font-size:16px;color:#55656c}
+.col.sc .nm{font-size:9px;overflow:visible}
 .col.flash{animation:flash 1.4s ease 2}
 @keyframes flash{0%,100%{--cb:#f6efe1}40%{--cb:#ffe08a}}
 /* teacher assistant */
@@ -177,7 +188,7 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
 .str{position:relative;display:grid;place-items:center}
 .str::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1.5px solid #6b7a80}
 .str b{position:relative;font-family:var(--f-mono);font-size:17px;background:var(--cb);padding:0 3px;line-height:1;color:#14212a}
-.str b.out{color:#c43b30}
+.str b.out{color:inherit}
 .nm{font-size:11px;text-align:center;color:#55656c;white-space:nowrap;overflow:hidden}
 .stk{display:flex;flex-direction:column;align-items:center;line-height:1}
 .cnt{font-family:var(--f-display);font-weight:800;font-size:15px;color:#0b7470}
@@ -259,6 +270,8 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
       <span class="step">1</span><h2>Әуенді жібер</h2>
       <div class="seg" id="durSeg" role="group" aria-label="Ұзақтығы"><button data-d="60">1 мин</button><button data-d="120">2 мин</button><button data-d="180">3 мин</button><button data-d="240">4 мин</button></div>
     </div>
+    <label class="btn wood big" for="mainMusic" style="justify-content:center">♫ Музыка файлын жүктеп, нотасын алу</label>
+    <input id="mainMusic" type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.opus,.aac,.flac" hidden>
     <div class="chat" id="chat" aria-live="polite"></div>
     <div class="composer" id="composer">
       <div id="cIdle" style="display:contents">
@@ -309,13 +322,15 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
 
   <!-- 3. tab -->
   <section class="card" aria-label="Цифрлық нота">
-    <div class="card-h"><span class="step">3</span><h2>Цифрлық нота</h2><span class="muted small" id="srcLbl"></span></div>
+    <div class="card-h"><span class="step">3</span><h2>Цифрлық нота</h2><button class="btn primary" id="fixBtn">✓ Ұстаз жөндесін</button></div>
+    <span class="muted small" id="srcLbl"></span>
     <div class="tabinfo" id="strInfo"></div>
     <div class="editor" id="editor" hidden>
       <span class="what" id="edWhat"></span>
       <button class="btn sm" data-ed="up">▲ Нота</button><button class="btn sm" data-ed="down">▼ Нота</button>
       <button class="btn sm" data-ed="plus">Қағыс +</button><button class="btn sm" data-ed="minus">Қағыс −</button>
       <button class="btn sm" data-ed="str">Ішекті ауыстыру</button><button class="btn sm" data-ed="del">Өшіру</button>
+      <button class="btn sm primary" data-ed="orig">▶ Түпнұсқа (такт)</button><button class="btn sm primary" data-ed="mine">▶ Домбыра (такт)</button>
       <button class="btn sm" data-ed="close">Дайын</button>
     </div>
     <div class="tabscroll"><div class="tab" id="tab"></div></div>
@@ -570,12 +585,21 @@ function render(){
   compute();const hn=hiName();let html='',cur=-1;const res=st.check?st.check.res:null;
   pieces.forEach((p,k)=>{
     if(p.bar!==cur){if(cur>=0)html+='</div>';cur=p.bar;html+=`<div class="bar"><span class="barno">${cur+1}</span>`;}
-    const w=Math.round(30+p.b*22);let cls=p.i===st.sel?' sel':'';if(res&&res[k])cls+=' '+res[k].status;
-    if(p.pm==null)html+=`<div class="col rest${cls}" data-k="${k}" data-i="${p.i}" tabindex="0" style="--w:${w}px"><div class="fg"></div><div class="str"></div><div class="str"></div><div class="nm">үзіліс</div><div class="stk"><span class="cnt">·</span></div></div>`;
-    else{const ar=strokesOf(p),num=`<b class="${p.out?'out':''}">${p.f}</b>`;
-      html+=`<div class="col${cls}" data-k="${k}" data-i="${p.i}" tabindex="0" style="--w:${w}px" aria-label="${NAMES[p.pm%12]}, ${p.s?hn:'Ре'} ішегі, ${p.f}-перне, ${ar.length} қағыс"><div class="fg">${p.cont?'':p.fg}</div><div class="str">${p.s===1?num:''}</div><div class="str">${p.s===0?num:''}</div><div class="nm">${p.cont?'':NAMES[p.pm%12]}</div><div class="stk"><span class="cnt">${ar.length}</span><span class="ar">${ar.join('')}</span></div></div>`;}});
+    let cls=p.i===st.sel?' sel':'';if(res&&res[k])cls+=' '+res[k].status;const drone=$('#drone').checked;
+    const n=Math.max(1,Math.round(p.b*2)),s0=Math.round(p.start*2);
+    for(let q=0;q<n;q++){const pos=s0+q,up=pos%2===1,first=q===0;
+      const beam=p.pm==null?'':(pos%2===0?' b1':' b2');
+      if(p.pm==null){html+=`<div class="col sc rest${cls}" data-k="${k}" data-i="${p.i}" tabindex="0"><div class="fg"></div><div class="mk"></div><div class="str"></div><div class="str"></div><div class="stem"><span class="rs">${first?'𝄽':''}</span></div><div class="nm">${first?'үзіліс':''}</div></div>`;continue;}
+      const num=`<b class="${p.out?'out':''}">${p.f}</b>`,dz='<b class="dz">0</b>';
+      const hiS=p.s===1?num:(drone?dz:''),loS=p.s===0?num:(drone?dz:'');
+      html+=`<div class="col sc${cls}${beam}${q>0?' tie':''}" data-k="${k}" data-i="${p.i}" tabindex="0"${first?` aria-label="${NAMES[p.pm%12]}, ${p.s?hn:'Ре'} ішегі, ${p.f}-перне, ${n} қағыс"`:''}><div class="fg">${first&&!p.cont&&p.f?p.fg:''}</div><div class="mk">${up?'V':'⊓'}</div><div class="str">${hiS}</div><div class="str">${loS}</div><div class="stem"><i></i></div><div class="nm">${first&&!p.cont?NAMES[p.pm%12]:''}</div></div>`;}
+  });
   if(cur>=0)html+='</div>';
   $('#tab').innerHTML=html;
+  // beams join the two strokes of one beat only when both are notes in the same bar
+  $('#tab').querySelectorAll('.bar').forEach(bar=>{const cs=[...bar.querySelectorAll('.col.sc')];cs.forEach((c,i)=>{
+    if(c.classList.contains('b1')&&!(cs[i+1]&&cs[i+1].classList.contains('b2')))c.classList.remove('b1');
+    if(c.classList.contains('b2')&&!(cs[i-1]&&cs[i-1].classList.contains('b1')))c.classList.remove('b2');});});
   $('#srcLbl').textContent=st.source;
   $('#strInfo').textContent=`Жоғарғы сызық — ${hn} ішегі, төменгі сызық — Ре ішегі`;
   const pr=(sel,attr,val)=>document.querySelectorAll(sel+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[attr]==String(val))));
@@ -587,7 +611,14 @@ function render(){
   updEditor();renderResult();updTime(0);save();}
 
 /* ---------- editor ---------- */
+let srcBuf=null,origSrc=null;
+function barTimes(bar){const inBar=pieces.filter(p=>p.bar===bar),nxt=pieces.filter(p=>p.bar===bar+1);const tOf=p=>{const n=st.melody[p.i];return n&&n.t!=null?n.t:null;};
+  let t0=null;for(const p of inBar){const t=tOf(p);if(t!=null){t0=t;break;}}let t1=null;for(const p of nxt){const t=tOf(p);if(t!=null){t1=t;break;}}
+  if(t0==null)return null;if(t1==null||t1<=t0){const last=[...inBar].reverse().find(p=>tOf(p)!=null);t1=tOf(last)+1.2;}return[t0,t1];}
+function playOrig(bar){if(!srcBuf)return false;const tt=barTimes(bar);if(!tt)return false;ac();stopPlay();stopVoice();if(origSrc)try{origSrc.stop();}catch(_){}
+  const s=Math.max(0,tt[0]-.05),d=Math.min(srcBuf.duration-s,tt[1]-tt[0]+.15);if(d<=0)return false;origSrc=ctx.createBufferSource();origSrc.buffer=srcBuf;origSrc.connect(ctx.destination);origSrc.start(0,s,d);return true;}
 function updEditor(){const ed=$('#editor');const n=st.melody[st.sel];if(!n){ed.hidden=true;return;}ed.hidden=false;const p=pieces.find(x=>x.i===st.sel);
+  const ob=ed.querySelector('[data-ed="orig"]');ob.disabled=!srcBuf||!p||!barTimes(p.bar);ob.title=ob.disabled?'Түпнұсқа дыбыс жоқ (әуенді қайта жүктеңіз)':'';
   $('#edWhat').textContent=n.m==null?'Үзіліс':`${NAMES[p.pm%12]} · ${Math.max(1,Math.round(n.b*2))} қағыс`;
   ed.querySelectorAll('[data-ed="up"],[data-ed="down"],[data-ed="str"]').forEach(b=>b.disabled=n.m==null);}
 $('#tab').addEventListener('click',e=>{const c=e.target.closest('.col');if(!c||checking)return;const i=+c.dataset.i;const was=st.sel===i;st.sel=was?-1:i;
@@ -595,6 +626,7 @@ $('#tab').addEventListener('click',e=>{const c=e.target.closest('.col');if(!c||c
   if(!was&&p&&p.pm!=null){ac();showOnNeck(p,pieces[+c.dataset.k+1]);showStroke(p,0);const last=[null,null];hit(ctx.currentTime+.01,p.pm,.9,last,p.s);vibe(p.s);lastPl[p.s]=performance.now();animIdle();}});
 $('#tab').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const c=e.target.closest('.col');if(c){e.preventDefault();c.click();}}});
 $('#editor').addEventListener('click',e=>{const b=e.target.closest('[data-ed]');if(!b)return;const n=st.melody[st.sel];if(!n)return;const a=b.dataset.ed;
+  if(a==='orig'||a==='mine'){const p=pieces.find(x=>x.i===st.sel);if(!p)return;if(a==='orig')playOrig(p.bar);else playRange(p.bar*st.meter,Math.min(totalBeats,(p.bar+1)*st.meter));return;}
   if(a==='up'&&n.m!=null){n.m++;delete n.fs;}if(a==='down'&&n.m!=null){n.m--;delete n.fs;}
   if(a==='plus')n.b=Math.min(8,n.b+.5);if(a==='minus')n.b=Math.max(.5,n.b-.5);
   if(a==='str'){const p=pieces.find(x=>x.i===st.sel);if(p)n.fs=p.s===1?0:1;}
@@ -608,6 +640,7 @@ $('#tempo').addEventListener('input',e=>{st.tempo=+e.target.value;$('#tempoVal')
 $('#tempo').addEventListener('change',()=>{restartIfPlaying();render();});
 $('#tuneSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.tune=b.dataset.tune;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();});
 $('#meterSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.meter=+b.dataset.m;invalidate();stopPlay();render();});
+$('#drone').addEventListener('change',()=>render());
 $('#up').onclick=()=>{st.shift++;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();};
 $('#dn').onclick=()=>{st.shift--;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();};
 function loadSample(){stopPlay();st.melody=SAMPLE.map(([m,b])=>({m,b}));st.shift=0;st.tempo=90;st.sel=-1;st.source='Мысал әуен';invalidate();render();}
@@ -686,8 +719,8 @@ function tick(){if(!playing)return;const now=ctx.currentTime,beat=(now-t0)/beatD
     else if(fullPlay&&$('#loop').checked){srcs=[];t0=ctx.currentTime+.05;schedule(t0,0,totalBeats,true,$('#metro').checked);}
     else{stopPlay();return;}}
   const k=pieces.findIndex(p=>beat>=p.start&&beat<p.start+p.b);
-  if(k!==lastK){document.querySelectorAll('.col.now').forEach(c=>c.classList.remove('now'));const el=document.querySelector(`.col[data-k="${k}"]`);
-    if(el){el.classList.add('now');const r=el.getBoundingClientRect();if(!stageOn()&&(r.bottom>innerHeight-100||r.top<0))el.scrollIntoView({block:'center',behavior:'smooth'});}
+  if(k!==lastK){document.querySelectorAll('.col.now').forEach(c=>c.classList.remove('now'));const els=document.querySelectorAll(`.col[data-k="${k}"]`);els.forEach(e=>e.classList.add('now'));const el=els[0];
+    if(el){const r=el.getBoundingClientRect();if(!stageOn()&&(r.bottom>innerHeight-100||r.top<0))el.scrollIntoView({block:'center',behavior:'smooth'});}
     if(k>=0)showOnNeck(pieces[k],pieces[k+1]);lastK=k;lastQ=-1;}
   if(k>=0){const p=pieces[k],q=Math.floor((beat-p.start)*2+1e-6);if(q!==lastQ){lastQ=q;showStroke(p,q);if(p.pm!=null&&(!checking||$('#guide').checked)){vibe(p.s);lastPl[p.s]=performance.now();if($('#drone').checked){vibe(1-p.s);lastPl[1-p.s]=performance.now();}}}}
   drawStage(Math.min(beat,totalBeats));
@@ -731,17 +764,23 @@ function release(){if(!holding)return;holding=false;mic.style.transform='';if(!r
 mic.addEventListener('pointerup',release);mic.addEventListener('pointercancel',release);
 mic.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(recOn)stopRec(true);else startRec().then(ok=>{if(ok){locked=true;recUI(true);}});}});
 $('#binBtn').onclick=()=>{stopRec(false);teacher('Жазба өшірілді.');};
-$('#file').onchange=async e=>{const f=e.target.files[0];if(!f)return;e.target.value='';ac();stopPlay();handleAudio(await f.arrayBuffer(),f.name);};
+async function loadMusic(f){if(!f)return;ac();stopPlay();stopVoice();let dec;
+  try{dec=await ctx.decodeAudioData((await f.arrayBuffer()).slice(0));}catch(e){teacher('Бұл файлды аша алмадым. mp3, m4a, wav немесе ogg түріндегі аудио жібер.',null,true);return;}
+  const dur=Math.min(dec.duration,st.maxDur);$('#chat').scrollIntoView({behavior:'smooth',block:'center'});
+  handleAudio(null,f.name+(dec.duration>st.maxDur?` (0:00–${fmt(dur)})`:''),f,{dec,start:0,dur,filter:true,music:true});}
+$('#file').onchange=e=>{const f=e.target.files[0];e.target.value='';loadMusic(f);};
+$('#mainMusic').onchange=e=>{const f=e.target.files[0];e.target.value='';loadMusic(f);};
 
 async function handleAudio(ab,name,blob,opt){let dec;opt=opt||{};
   if(opt.dec)dec=opt.dec;else{try{dec=await ctx.decodeAudioData(ab.slice(0));}catch(e){teacher('Бұл файлды аша алмадым. mp3, m4a, ogg немесе wav түріндегі аудио жібер.',null,true);return;}}
-  voiceMsg(dec,name,blob);const wait=teacher('Тыңдап жатырмын…');
+  if(!opt.again)voiceMsg(dec,name,blob);const wait=teacher(opt.again?'Басқа тәсілмен қайта тыңдап жатырмын…':'Тыңдап жатырмын…');
   const r=await analyzeMelody(dec,opt,p=>{wait.querySelector('.bub>div:nth-child(2)').textContent='Тыңдап жатырмын… '+Math.round(p*100)+'%';});
   wait.remove();
   if(r.error){teacher(r.error,null,true);return;}
+  srcBuf=dec;
   st.source=name||'Дауыстық хабар';render();
   teacher(`Тамаша! <b>${r.count}</b> нота таптым, сенің қарқының ♩ = ${st.tempo}. Цифрлық нотасын жаздым, домбырада қайда басу керегін көрсетемін.`,
-    [['▶ Домбырамен тыңда',()=>startPlay(),'primary'],['Нотаны көру',()=>$('#tab').scrollIntoView({behavior:'smooth',block:'center'})],['Өзімді тексеру',()=>$('#checkBtn').scrollIntoView({behavior:'smooth',block:'center'})]]);}
+    [['▶ Домбырамен тыңда',()=>startPlay(),'primary'],['Нотаны көру',()=>$('#tab').scrollIntoView({behavior:'smooth',block:'center'})],[opt.music?'Ән/дауыс ретінде қайта тыңда':'Музыка/домбыра ретінде қайта тыңда',()=>handleAudio(null,name,null,{...opt,dec,music:!opt.music,again:true}),'']]);}
 
 async function toMono(dec,maxDur,start,filter){start=start||0;const dur=Math.max(.1,Math.min(dec.duration-start,maxDur));
   const off=new OfflineAudioContext(1,Math.max(1,Math.ceil(dur*SR)),SR);const sn=off.createBufferSource();sn.buffer=dec;
@@ -753,7 +792,7 @@ async function toMono(dec,maxDur,start,filter){start=start||0;const dur=Math.max
 async function analyzeMelody(dec,opt,progress){opt=opt||{};
   const x0=await toMono(dec,opt.dur||st.maxDur,opt.start||0,!!opt.filter);let peak=0;for(let i=0;i<x0.length;i++){const a=Math.abs(x0[i]);if(a>peak)peak=a;}
   const x=new Float32Array(x0.length);const gn=peak>1e-5?.9/peak:1;for(let i=0;i<x0.length;i++)x[i]=x0[i]*gn;let voiced=0;
-  let FR,rms,sm,hopS,gate;
+  let FR,rms,sm,hopS,gate,musicNotes=null,active=0;
   if(opt.music){
     /* music with accompaniment: predominant-melody tracking (harmonic salience + Viterbi path) */
     const S=await salience(x,p=>progress(p*.85),2048,256,true);if(!S)return{error:'Жазба тым қысқа.'};
@@ -774,6 +813,15 @@ async function analyzeMelody(dec,opt,progress){opt=opt||{};
       for(let t=n-1;t>=0;t--){sm[f+t]=lo+k;voiced++;if(t>0)k=back[t-1][k];}
       f=e;}
     progress(.9);
+    /* each strum is a new note: pick onsets from spectral flux, pitch = median of the melody path between onsets */
+    const fl=S.flux,W2=Math.round(.25/hopS),ons=[];const minGap=Math.round(.07/hopS);
+    for(let i=1;i<FR-1;i++){if(fl[i]<fl[i-1]||fl[i]<fl[i+1])continue;let a=[];for(let j=Math.max(0,i-W2);j<=Math.min(FR-1,i+W2);j++)a.push(fl[j]);a.sort((x,y)=>x-y);
+      const md=a[a.length>>1],mx=a[a.length-1];if(fl[i]>md*1.5+.02*mx&&fl[i]>=mx*.3&&(!ons.length||i-ons[ons.length-1]>=minGap))ons.push(i);}
+    const half=Math.round(S.half/hopS);musicNotes=[];
+    for(let k=0;k<ons.length;k++){const a=ons[k],b=k+1<ons.length?ons[k+1]:Math.min(FR,a+Math.round(.6/hopS));
+      const i0=Math.min(b-1,a+half+Math.round(.02/hopS)),i1=Math.max(i0+1,b+half-Math.round(.01/hopS));const v=[];
+      for(let i=Math.max(0,i0);i<Math.min(FR,i1);i++)if(!isNaN(sm[i]))v.push(sm[i]);
+      if(v.length<Math.max(2,(i1-i0)*.4))continue;v.sort((x,y)=>x-y);musicNotes.push({f:v[v.length>>1],s:a*hopS,e:b*hopS});}
   }else{
   const W=512,HOP=320,TMIN=Math.floor(SR/900),TMAX=Math.floor(SR/70);FR=Math.floor((x.length-W-TMAX)/HOP);hopS=HOP/SR;
   if(FR<10)return{error:'Жазба тым қысқа. Кемінде 5 секунд жаз.'};
@@ -782,7 +830,7 @@ async function analyzeMelody(dec,opt,progress){opt=opt||{};
   const sorted=Array.from(rms).sort((a,b)=>a-b);gate=Math.max(.003,sorted[Math.floor(FR*.95)]*.12);
   for(let fi=0;fi<FR;fi++){
     if(fi%150===0){progress(fi/FR);await sleep();}
-    if(rms[fi]<gate)continue;const o=fi*HOP;let run=0;d[0]=1;
+    if(rms[fi]<gate)continue;active++;const o=fi*HOP;let run=0;d[0]=1;
     for(let t=1;t<=TMAX;t++){let s=0;for(let j=0;j<W;j++){const v=x[o+j]-x[o+j+t];s+=v*v;}run+=s;d[t]=run?s*t/run:1;}
     let tau=-1;for(let t=TMIN;t<=TMAX;t++){if(d[t]<.22){while(t+1<=TMAX&&d[t+1]<d[t])t++;tau=t;break;}}
     if(tau<0){let mi=TMIN;for(let t=TMIN;t<=TMAX;t++)if(d[t]<d[mi])mi=t;if(d[mi]<.4)tau=mi;}
@@ -805,7 +853,8 @@ async function analyzeMelody(dec,opt,progress){opt=opt||{};
       if(Math.abs(v-m)<.75&&!onset){cur.v.push(v);continue;}close();}
     cur={s:i,v:[v]};}
   close();
-  for(let k=notes.length-1;k>=0;k--){const n=notes[k];if(n.e-n.s<.09){const pv=notes[k-1];if(pv&&n.s-pv.e<.05)pv.e=n.e;notes.splice(k,1);}}
+  if(musicNotes&&musicNotes.length>=2){notes.length=0;musicNotes.forEach(n=>notes.push(n));}
+  for(let k=notes.length-1;k>=0;k--){const n=notes[k];if(n.e-n.s<(musicNotes?.04:.09)){const pv=notes[k-1];if(pv&&n.s-pv.e<.05)pv.e=n.e;notes.splice(k,1);}}
   if(notes.length>=2){
     let sx=0,sy=0;notes.forEach(n=>{const w=n.e-n.s,ph=2*Math.PI*(n.f-Math.round(n.f));sx+=w*Math.cos(ph);sy+=w*Math.sin(ph);});const off=Math.atan2(sy,sx)/(2*Math.PI);
     const hist=new Array(12).fill(0);notes.forEach(n=>{hist[((Math.round(n.f-off)%12)+12)%12]+=n.e-n.s;});
@@ -818,14 +867,14 @@ async function analyzeMelody(dec,opt,progress){opt=opt||{};
       n.m=m;});
   }
   if(notes.length<2){const lvl=peak<.02?'өте төмен (микрофонға жақынырақ айт)':peak<.1?'төмендеу':'жақсы';return{error:`Әуенді таба алмадым. Дыбыс деңгейі: ${lvl}. Әуенді бөліктер: ${Math.round(voiced/FR*100)}%. Тынышырақ жерде, «ля-ля» деп созып, анық айтып көр.`};}
-  const seq=[];notes.forEach((n,k)=>{const nx=notes[k+1];if(!nx){seq.push({m:n.m,d:n.e-n.s});return;}
-    const gap=nx.s-n.e;if(gap>(opt.music?.45:.2)){seq.push({m:n.m,d:n.e-n.s});seq.push({m:null,d:gap});}else seq.push({m:n.m,d:nx.s-n.s});});
+  const T0=opt.start||0;const seq=[];notes.forEach((n,k)=>{const nx=notes[k+1];if(!nx){seq.push({m:n.m,d:n.e-n.s,t:T0+n.s});return;}
+    const gap=nx.s-n.e;if(gap>(opt.music?.45:.2)){seq.push({m:n.m,d:n.e-n.s,t:T0+n.s});seq.push({m:null,d:gap,t:T0+n.e});}else seq.push({m:n.m,d:nx.s-n.s,t:T0+n.s});});
   const md=med(seq.filter(q=>q.m!=null).map(q=>q.d));let bu=md,be=Infinity;
   for(let u=md*.75;u<=md*1.3;u+=md*.01){let e=0;seq.forEach(q=>{const r=q.d/u*2;e+=Math.abs(r-Math.round(r))*(q.m==null?.5:1);});if(e<be){be=e;bu=u;}}
   while(60/bu>132)bu*=2;while(60/bu<50)bu/=2;
-  const mel=[];seq.forEach(q=>{let b=Math.round(q.d/bu*2)/2;if(q.m==null&&b<.5)return;b=Math.max(.5,Math.min(8,b));mel.push({m:q.m,b});});
+  const mel=[];seq.forEach(q=>{let b=Math.round(q.d/bu*2)/2;if(q.m==null&&b<.5)return;b=Math.max(.5,Math.min(8,b));mel.push({m:q.m,b,t:+q.t.toFixed(3)});});
   stopPlay();st.melody=mel;st.shift=0;st.sel=-1;st.tempo=Math.max(40,Math.min(160,Math.round(60/bu)));invalidate();
-  return{count:mel.filter(n=>n.m!=null).length};}
+  return{count:mel.filter(n=>n.m!=null).length,ratio:active?voiced/active:1};}
 
 /* ---------- self check ---------- */
 let chk=null;
@@ -861,15 +910,16 @@ async function salience(x,progress,N,H,music){N=N||4096;H=H||512;
   const F=Math.floor((x.length-N)/H)+1;if(F<4)return null;
   const win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/(N-1));
   const R=[];for(let m=MLO;m<=MHI;m++){const f0=440*Math.pow(2,(m-69)/12),a=[];for(let k=1;k<=6;k++){const f=f0*k;if(f>7600)break;a.push([Math.floor(f*.98/SR*N),Math.ceil(f*1.02/SR*N),1/Math.pow(k,.6)]);}R.push(a);}
-  let avg=null;const sal=new Float32Array(F*NM),rms=new Float32Array(F),re=new Float32Array(N),im=new Float32Array(N),mag=new Float32Array(N/2);
+  let avg=null,plog=null;const flux=new Float32Array(F);const sal=new Float32Array(F*NM),rms=new Float32Array(F),re=new Float32Array(N),im=new Float32Array(N),mag=new Float32Array(N/2);
   for(let fi=0;fi<F;fi++){
     if(fi%120===0){progress(fi/F);await sleep();}
     const o=fi*H;let e=0;for(let i=0;i<N;i++){re[i]=x[o+i]*win[i];im[i]=0;}
     for(let i=N/2-H;i<N/2+H;i++)e+=x[o+i]*x[o+i];rms[fi]=Math.sqrt(e/(2*H));
     fft(re,im);for(let i=0;i<N/2;i++)mag[i]=Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+    if(music){const top=Math.min(N/2,Math.floor(5000/SR*N));if(!plog)plog=new Float32Array(N/2);let fl=0;for(let i=2;i<top;i++){const l=Math.log(1+20*mag[i]);const d=l-plog[i];if(d>0)fl+=d;plog[i]=l;}flux[fi]=fl;}
     if(music){if(!avg)avg=new Float32Array(N/2);const al=1-Math.exp(-H/SR/1.2);for(let i=0;i<N/2;i++){const m=Math.sqrt(mag[i]);avg[i]+=al*(m-avg[i]);mag[i]=Math.max(0,m-.7*avg[i]);}}
     for(let m=0;m<NM;m++){let s=0;for(const [lo,hi,w] of R[m]){let mx=0;for(let b=lo;b<=hi;b++)if(mag[b]>mx)mx=mag[b];s+=w*mx;}sal[fi*NM+m]=s;}}
-  return {sal,rms,F,hop:H/SR,half:N/2/SR};}
+  return {sal,rms,flux,F,hop:H/SR,half:N/2/SR};}
 async function runCheck(ab,mode,base){
   let dec,x;try{dec=await ctx.decodeAudioData(ab.slice(0));x=await toMono(dec,600);}catch(e){cmsg('Жазбаны аша алмадым. mp3, m4a немесе wav түрінде жүктеп көр.');return;}
   const S=await salience(x,p=>cmsg('Талданып жатыр… '+Math.round(p*100)+'%'));if(!S){cmsg('Жазба тым қысқа.');return;}
@@ -929,7 +979,7 @@ function teacherReview(){compute();const mel=st.melody,sugs=[];const key=findKey
   const prevN=i=>{for(let j=i-1;j>=0;j--)if(mel[j].m!=null)return j;return -1;},nextN=i=>{for(let j=i+1;j<mel.length;j++)if(mel[j].m!=null)return j;return -1;};
   // 1. scoops / wobbles between two equal notes
   const merged=new Set();
-  idx.forEach(i=>{const n=mel[i],a=prevN(i),b=nextN(i);if(a<0||b<0||n.b>.5)return;if(mel[a].m===mel[b].m&&Math.abs(n.m-mel[a].m)<=2&&a===i-1){merged.add(i);
+  idx.forEach(i=>{const n=mel[i],a=prevN(i),b=nextN(i);if(a<0||b<0||n.b>.5)return;if(mel[a].m===mel[b].m&&Math.abs(n.m-mel[a].m)<=2&&a===i-1&&mel[a].b>=1&&mel[b].b>=1){merged.add(i);
     sugs.push({type:'merge',i,into:a,text:`<b>${where(i)}</b>: қысқа ${NAMES[pcOf(n.m)]} нотасын алып тастау`,why:'Бұл дауыстың сырғанауы сияқты: алдыңғы және келесі нота бірдей. Алдыңғы нотаға қосамын.'});}});
   // 2. octave slips
   idx.forEach(i=>{if(merged.has(i))return;const a=prevN(i);if(a<0)return;const d=mel[i].m-mel[a].m;if(Math.abs(d)<10)return;const m2=mel[i].m-Math.sign(d)*12;const b=nextN(i);
@@ -976,6 +1026,15 @@ $('#shList').addEventListener('click',e=>{const b=e.target.closest('[data-go]');
 $('#shApply').onclick=()=>{if(!review)return;const chosen=review.sugs.filter((x,k)=>$('#sg'+k)&&$('#sg'+k).checked);closeSheet();if(!chosen.length)return;
   undoSnap={melody:st.melody.map(n=>({...n})),shift:st.shift};const r=applySugs(chosen);st.melody=r.mel;st.shift=r.shift;st.sel=-1;invalidate();render();
   teacher(`Нотаны түзеттім: ${chosen.length} өзгеріс. Тыңдап көр, ұнамаса қайтарып берем.`,[['▶ Тыңдау',()=>startPlay(),'primary'],['Болдырмау',()=>{if(!undoSnap)return;stopPlay();st.melody=undoSnap.melody;st.shift=undoSnap.shift;undoSnap=null;invalidate();render();teacher('Бұрынғы нотаны қайтардым.');}]]);
+  $('#chat').scrollIntoView({behavior:'smooth',block:'center'});};
+
+/* ---------- one-tap teacher fix ---------- */
+$('#fixBtn').onclick=()=>{if(checking)return;stopPlay();const r=teacherReview();
+  if(!r.sugs.length){teacher(`Нотаны тексердім (${r.key.name}). Түзететін ештеңе таппадым. Енді такт сайын «▶ Түпнұсқа» мен «▶ Домбыра» арқылы құлақпен салыстырып көр.`);$('#chat').scrollIntoView({behavior:'smooth',block:'center'});return;}
+  undoSnap={melody:st.melody.map(n=>({...n})),shift:st.shift};r.sugs=r.sugs.filter(x=>x.type!=='shift');if(!r.sugs.length){teacher(`Нотаны тексердім (${r.key.name}). Түзететін ештеңе таппадым.`);return;}const res=applySugs(r.sugs);st.melody=res.mel;st.shift=res.shift;st.sel=-1;invalidate();render();
+  const kinds={merge:'сырғанау нотасы алынды',pitch:'нота түзетілді',dur:'ұзақтық түзетілді',lead:'бастағы үзіліс алынды',fill:'соңғы такт толтырылды',shift:'тон ыңғайлы перне үшін жылжытылды'};
+  const cnt={};r.sugs.forEach(x=>cnt[x.type]=(cnt[x.type]||0)+1);
+  teacher(`Нотаны жөндедім (${r.key.name}): `+Object.keys(cnt).map(k=>`${cnt[k]} ${kinds[k]}`).join(', ')+'.',[['▶ Тыңдау',()=>startPlay(),'primary'],['Болдырмау',()=>{if(!undoSnap)return;stopPlay();st.melody=undoSnap.melody;st.shift=undoSnap.shift;undoSnap=null;invalidate();render();teacher('Бұрынғы нотаны қайтардым.');}]]);
   $('#chat').scrollIntoView({behavior:'smooth',block:'center'});};
 
 /* ---------- manual entry ---------- */
