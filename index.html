@@ -315,7 +315,7 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
         <div><span class="lbl">Домбыра күйі</span><div class="seg" id="tuneSeg"><button data-tune="kvarta">Кварта (ре–соль)</button><button data-tune="kvinta">Квинта (ре–ля)</button></div></div>
         <div><span class="lbl">Өлшем</span><div class="seg" id="meterSeg"><button data-m="2">2/4</button><button data-m="3">3/4</button><button data-m="4">4/4</button></div></div>
         <div><span class="lbl">Тон</span><div class="row"><button class="btn sm" id="dn">− жарты тон</button><button class="btn sm" id="up">+ жарты тон</button></div></div>
-        <div><span class="lbl">Дыбыс</span><label class="tog"><input type="checkbox" id="metro"> Метроном</label><label class="tog"><input type="checkbox" id="drone" checked> Екі ішекті бірге қағу</label><label class="tog"><input type="checkbox" id="loop"> Қайталап ойнату</label></div>
+        <div><span class="lbl">Дыбыс</span><label class="tog"><input type="checkbox" id="metro"> Метроном</label><label class="tog"><input type="checkbox" id="drone" checked> Екі ішекті бірге қағу</label><label class="tog"><input type="checkbox" id="loop"> Қайталап ойнату</label><label class="tog"><input type="checkbox" id="reTop" checked> Ре ішегі жоғарғы сызықта</label></div>
       </div>
     </details>
   </section>
@@ -363,7 +363,7 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
   <section class="card" aria-label="Белгілер">
     <div class="card-h"><h2>Белгілер</h2></div>
     <dl class="legend">
-      <div><dt>Екі сызық</dt><dd>Жоғарғы сызық — жіңішке дыбысты ішек (соль немесе ля), төменгі — ре ішегі.</dd></div>
+      <div><dt>Екі сызық</dt><dd id="lgLines">Жоғарғы сызық — Ре ішегі, төменгі сызық — жіңішке дыбысты ішек (соль немесе ля).</dd></div>
       <div><dt>Сызықтағы сан</dt><dd>Перне нөмірі (1–19). <span class="k">0</span> — ішекті баспай, ашық қағу.</dd></div>
       <div><dt>Сары сан</dt><dd>Сол қол саусағы: <span class="k">1</span> сұқ, <span class="k">2</span> ортан, <span class="k">3</span> аты жоқ, <span class="k">4</span> шынашақ.</dd></div>
       <div><dt>Төменгі сан</dt><dd>Сол нотада неше қағыс. <span class="k">↓</span> қағу, <span class="k">↑</span> ілу.</dd></div>
@@ -386,7 +386,7 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
     <div class="pn" id="pnManual" hidden>
       <span class="muted small">Ішек пен пернені бас: нота тізімге қосылады. Алдымен қағыс санын таңда.</span>
       <div class="row"><span class="lbl">Қағыс</span><div class="seg" id="mCnt"><button data-c="1">1</button><button data-c="2" aria-pressed="true">2</button><button data-c="3">3</button><button data-c="4">4</button><button data-c="6">6</button><button data-c="8">8</button></div></div>
-      <div class="fretpick"><div class="frow" id="mHi"></div><div class="frow" id="mLo"></div></div>
+      <div class="fretpick"><div class="frow" id="mLo"></div><div class="frow" id="mHi"></div></div>
       <div class="row"><button class="btn sm" id="mRest">Үзіліс</button><button class="btn sm" id="mBack">⌫ Соңғысын өшіру</button><button class="btn sm" id="mClear">Тазалау</button><button class="btn sm" id="mLoad">Қазіргі нотаны жүктеу</button></div>
       <div class="mseq" id="mSeq"></div>
       <details class="settings"><summary>Мәтінмен жазу (мұғалімге)</summary>
@@ -425,9 +425,9 @@ const NAMES=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль
 const TUNINGS={kvarta:[50,55],kvinta:[50,57]};
 const MAXF=19,SR=16000;
 const SAMPLE=[[62,1],[64,.5],[66,.5],[67,1],[69,1],[69,1],[67,.5],[66,.5],[64,2],[66,1],[67,.5],[69,.5],[71,1],[69,1],[67,1],[66,1],[64,2],[62,1],[64,1],[66,1],[64,1],[62,3],[null,1]];
-const st={melody:SAMPLE.map(([m,b])=>({m,b})),tempo:90,tune:'kvarta',meter:4,shift:0,maxDur:60,source:'Мысал әуен',sel:-1,check:null};
+const st={melody:SAMPLE.map(([m,b])=>({m,b})),tempo:90,tune:'kvarta',meter:4,shift:0,maxDur:60,source:'Мысал әуен',sel:-1,check:null,reTop:true};
 try{const s=JSON.parse(localStorage.getItem('dombyra-etud')||'null');if(s&&Array.isArray(s.melody)&&s.melody.length){Object.assign(st,s);st.sel=-1;st.check=null;}}catch(e){}
-function save(){try{localStorage.setItem('dombyra-etud',JSON.stringify({melody:st.melody,tempo:st.tempo,tune:st.tune,meter:st.meter,shift:st.shift,maxDur:st.maxDur,source:st.source}));}catch(e){}}
+function save(){try{localStorage.setItem('dombyra-etud',JSON.stringify({reTop:st.reTop,melody:st.melody,tempo:st.tempo,tune:st.tune,meter:st.meter,shift:st.shift,maxDur:st.maxDur,source:st.source}));}catch(e){}}
 const invalidate=()=>{st.check=null;};
 const fmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
 const sleep=()=>new Promise(r=>setTimeout(r,0));
@@ -484,7 +484,7 @@ const hiName=()=>NAMES[TUNINGS[st.tune][1]%12];
 const FINGER=['ашық ішек','сұқ саусақ','ортан саусақ','аты жоқ саусақ','шынашақ'];
 
 /* ---------- dombyra neck ---------- */
-const NK={x0:96,L:1150,yHi:92,yLo:146,top:62,bot:176};
+const NK={x0:96,L:1150,yHi:146,yLo:92,top:62,bot:176};
 const fx=n=>NK.x0+NK.L*(1-Math.pow(2,-n/12));
 const yOf=s=>s===1?NK.yHi:NK.yLo;
 function drawNeck(){const end=fx(MAXF)+18;let h='';
@@ -497,13 +497,13 @@ function drawNeck(){const end=fx(MAXF)+18;let h='';
     h+=`<text x="${(fx(n-1)+x)/2}" y="${NK.bot+22}" text-anchor="middle" font-size="13" font-family="PT Mono,monospace" fill="#a2b5c3">${n}</text>`;}
   h+=`<text x="${NK.x0-18}" y="${NK.bot+22}" text-anchor="middle" font-size="13" font-family="PT Mono,monospace" fill="#a2b5c3">0</text>`;
   h+=`<text x="${NK.x0+6}" y="${NK.top-14}" font-size="14" fill="#f0c58c" font-family="PT Sans,sans-serif" id="lblHi"></text>`;
-  h+=`<text x="${NK.x0+6}" y="${NK.bot+42}" font-size="14" fill="#f0c58c" font-family="PT Sans,sans-serif">Ре ішегі (төменгі сызық)</text>`;
+  h+=`<text x="${NK.x0+6}" y="${NK.bot+42}" font-size="14" fill="#f0c58c" font-family="PT Sans,sans-serif">Ре ішегі (жоғарғы сызық)</text>`;
   h+=`<line id="sHi" x1="20" y1="${NK.yHi}" x2="1004" y2="${NK.yHi}" stroke="#f4ead6" stroke-width="2.6"/>`;
   h+=`<line id="sLo" x1="20" y1="${NK.yLo}" x2="1004" y2="${NK.yLo}" stroke="#f4ead6" stroke-width="2.6"/>`;
   h+=`<g id="mk"></g>`;
   $('#neck').innerHTML=h;}
 function showOnNeck(p,next){const g=$('#mk');if(!g)return;let h='';
-  $('#lblHi').textContent=hiName()+' ішегі (жоғарғы сызық)';
+  $('#lblHi').textContent=hiName()+' ішегі (төменгі сызық)';
   if(next&&next.pm!=null&&(!p||next.f!==p.f||next.s!==p.s)){const x=next.f===0?NK.x0-22:(fx(next.f-1)+fx(next.f))/2;h+=`<circle cx="${x}" cy="${yOf(next.s)}" r="15" fill="none" stroke="#3fc1cf" stroke-width="3" stroke-dasharray="5 4" opacity=".8"/>`;}
   if(p&&p.pm!=null){const y=yOf(p.s);
     if(p.f===0){h+=`<line x1="20" y1="${y}" x2="1004" y2="${y}" stroke="#3fc1cf" stroke-width="7" stroke-opacity=".45"/><circle cx="${NK.x0-22}" cy="${y}" r="17" fill="#3fc1cf"/><text x="${NK.x0-22}" y="${y+6}" text-anchor="middle" font-size="18" font-weight="700" fill="#062227" font-family="Rubik,sans-serif">0</text>`;}
@@ -592,7 +592,7 @@ function render(){
       if(p.pm==null){html+=`<div class="col sc rest${cls}" data-k="${k}" data-i="${p.i}" tabindex="0"><div class="fg"></div><div class="mk"></div><div class="str"></div><div class="str"></div><div class="stem"><span class="rs">${first?'𝄽':''}</span></div><div class="nm">${first?'үзіліс':''}</div></div>`;continue;}
       const num=`<b class="${p.out?'out':''}">${p.f}</b>`,dz='<b class="dz">0</b>';
       const hiS=p.s===1?num:(drone?dz:''),loS=p.s===0?num:(drone?dz:'');
-      html+=`<div class="col sc${cls}${beam}${q>0?' tie':''}" data-k="${k}" data-i="${p.i}" tabindex="0"${first?` aria-label="${NAMES[p.pm%12]}, ${p.s?hn:'Ре'} ішегі, ${p.f}-перне, ${n} қағыс"`:''}><div class="fg">${first&&!p.cont&&p.f?p.fg:''}</div><div class="mk">${up?'V':'⊓'}</div><div class="str">${hiS}</div><div class="str">${loS}</div><div class="stem"><i></i></div><div class="nm">${first&&!p.cont?NAMES[p.pm%12]:''}</div></div>`;}
+      html+=`<div class="col sc${cls}${beam}${q>0?' tie':''}" data-k="${k}" data-i="${p.i}" tabindex="0"${first?` aria-label="${NAMES[p.pm%12]}, ${p.s?hn:'Ре'} ішегі, ${p.f}-перне, ${n} қағыс"`:''}><div class="fg">${first&&!p.cont&&p.f?p.fg:''}</div><div class="mk">${up?'V':'⊓'}</div><div class="str">${st.reTop?loS:hiS}</div><div class="str">${st.reTop?hiS:loS}</div><div class="stem"><i></i></div><div class="nm">${first&&!p.cont?NAMES[p.pm%12]:''}</div></div>`;}
   });
   if(cur>=0)html+='</div>';
   $('#tab').innerHTML=html;
@@ -601,7 +601,7 @@ function render(){
     if(c.classList.contains('b1')&&!(cs[i+1]&&cs[i+1].classList.contains('b2')))c.classList.remove('b1');
     if(c.classList.contains('b2')&&!(cs[i-1]&&cs[i-1].classList.contains('b1')))c.classList.remove('b2');});});
   $('#srcLbl').textContent=st.source;
-  $('#strInfo').textContent=`Жоғарғы сызық — ${hn} ішегі, төменгі сызық — Ре ішегі`;
+  $('#strInfo').textContent=st.reTop?`Жоғарғы сызық — Ре ішегі, төменгі сызық — ${hn} ішегі`:`Жоғарғы сызық — ${hn} ішегі, төменгі сызық — Ре ішегі`;$('#reTop').checked=st.reTop;const lg=$('#lgLines');if(lg)lg.textContent=$('#strInfo').textContent+'.';
   const pr=(sel,attr,val)=>document.querySelectorAll(sel+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[attr]==String(val))));
   pr('#tempoSeg','t',st.tempo);pr('#tuneSeg','tune',st.tune);pr('#meterSeg','m',st.meter);pr('#durSeg','d',st.maxDur);
   $('#tempo').value=st.tempo;$('#tempoVal').textContent='♩ = '+st.tempo;$('#ptempo').textContent='♩ '+st.tempo;
@@ -641,6 +641,7 @@ $('#tempo').addEventListener('change',()=>{restartIfPlaying();render();});
 $('#tuneSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.tune=b.dataset.tune;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();});
 $('#meterSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.meter=+b.dataset.m;invalidate();stopPlay();render();});
 $('#drone').addEventListener('change',()=>render());
+$('#reTop').addEventListener('change',e=>{st.reTop=e.target.checked;render();});
 $('#up').onclick=()=>{st.shift++;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();};
 $('#dn').onclick=()=>{st.shift--;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();};
 function loadSample(){stopPlay();st.melody=SAMPLE.map(([m,b])=>({m,b}));st.shift=0;st.tempo=90;st.sel=-1;st.source='Мысал әуен';invalidate();render();}
