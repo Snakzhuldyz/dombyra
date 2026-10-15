@@ -315,7 +315,7 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
         <div><span class="lbl">Домбыра күйі</span><div class="seg" id="tuneSeg"><button data-tune="kvarta">Кварта (ре–соль)</button><button data-tune="kvinta">Квинта (ре–ля)</button></div></div>
         <div><span class="lbl">Өлшем</span><div class="seg" id="meterSeg"><button data-m="2">2/4</button><button data-m="3">3/4</button><button data-m="4">4/4</button></div></div>
         <div><span class="lbl">Тон</span><div class="row"><button class="btn sm" id="dn">− жарты тон</button><button class="btn sm" id="up">+ жарты тон</button></div></div>
-        <div><span class="lbl">Дыбыс</span><label class="tog"><input type="checkbox" id="metro"> Метроном</label><label class="tog"><input type="checkbox" id="drone" checked> Екі ішекті бірге қағу</label><label class="tog"><input type="checkbox" id="loop"> Қайталап ойнату</label><label class="tog"><input type="checkbox" id="reTop" checked> Ре ішегі жоғарғы сызықта</label></div>
+        <div><span class="lbl">Дыбыс</span><label class="tog"><input type="checkbox" id="metro"> Метроном</label><label class="tog"><input type="checkbox" id="drone" checked> Екі ішекті бірге қағу</label><label class="tog"><input type="checkbox" id="loop"> Қайталап ойнату</label><label class="tog"><input type="checkbox" id="reTop"> Ре ішегі жоғарғы сызықта</label></div>
       </div>
     </details>
   </section>
@@ -386,7 +386,7 @@ textarea.field{font-family:var(--f-mono);font-size:14px;min-height:70px;resize:v
     <div class="pn" id="pnManual" hidden>
       <span class="muted small">Ішек пен пернені бас: нота тізімге қосылады. Алдымен қағыс санын таңда.</span>
       <div class="row"><span class="lbl">Қағыс</span><div class="seg" id="mCnt"><button data-c="1">1</button><button data-c="2" aria-pressed="true">2</button><button data-c="3">3</button><button data-c="4">4</button><button data-c="6">6</button><button data-c="8">8</button></div></div>
-      <div class="fretpick"><div class="frow" id="mLo"></div><div class="frow" id="mHi"></div></div>
+      <div class="fretpick"><div class="frow" id="mHi"></div><div class="frow" id="mLo"></div></div>
       <div class="row"><button class="btn sm" id="mRest">Үзіліс</button><button class="btn sm" id="mBack">⌫ Соңғысын өшіру</button><button class="btn sm" id="mClear">Тазалау</button><button class="btn sm" id="mLoad">Қазіргі нотаны жүктеу</button></div>
       <div class="mseq" id="mSeq"></div>
       <details class="settings"><summary>Мәтінмен жазу (мұғалімге)</summary>
@@ -425,7 +425,7 @@ const NAMES=['До','До♯','Ре','Ре♯','Ми','Фа','Фа♯','Соль
 const TUNINGS={kvarta:[50,55],kvinta:[50,57]};
 const MAXF=19,SR=16000;
 const SAMPLE=[[62,1],[64,.5],[66,.5],[67,1],[69,1],[69,1],[67,.5],[66,.5],[64,2],[66,1],[67,.5],[69,.5],[71,1],[69,1],[67,1],[66,1],[64,2],[62,1],[64,1],[66,1],[64,1],[62,3],[null,1]];
-const st={melody:SAMPLE.map(([m,b])=>({m,b})),tempo:90,tune:'kvarta',meter:4,shift:0,maxDur:60,source:'Мысал әуен',sel:-1,check:null,reTop:true};
+const st={melody:SAMPLE.map(([m,b])=>({m,b})),tempo:90,tune:'kvarta',meter:4,shift:0,maxDur:60,source:'Мысал әуен',sel:-1,check:null,reTop:false};
 try{const s=JSON.parse(localStorage.getItem('dombyra-etud')||'null');if(s&&Array.isArray(s.melody)&&s.melody.length){Object.assign(st,s);st.sel=-1;st.check=null;}}catch(e){}
 function save(){try{localStorage.setItem('dombyra-etud',JSON.stringify({reTop:st.reTop,melody:st.melody,tempo:st.tempo,tune:st.tune,meter:st.meter,shift:st.shift,maxDur:st.maxDur,source:st.source}));}catch(e){}}
 const invalidate=()=>{st.check=null;};
@@ -644,7 +644,7 @@ $('#drone').addEventListener('change',()=>render());
 $('#reTop').addEventListener('change',e=>{st.reTop=e.target.checked;render();});
 $('#up').onclick=()=>{st.shift++;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();};
 $('#dn').onclick=()=>{st.shift--;st.melody.forEach(n=>delete n.fs);invalidate();stopPlay();render();};
-function loadSample(){stopPlay();st.melody=SAMPLE.map(([m,b])=>({m,b}));st.shift=0;st.tempo=90;st.sel=-1;st.source='Мысал әуен';invalidate();render();}
+function loadSample(){stopPlay();st.reTop=false;st.melody=SAMPLE.map(([m,b])=>({m,b}));st.shift=0;st.tempo=90;st.sel=-1;st.source='Мысал әуен';invalidate();render();}
 
 /* ---------- audio ---------- */
 let ctx=null,out=null;
@@ -779,7 +779,7 @@ async function handleAudio(ab,name,blob,opt){let dec;opt=opt||{};
   wait.remove();
   if(r.error){teacher(r.error,null,true);return;}
   srcBuf=dec;
-  st.source=name||'Дауыстық хабар';render();
+  st.source=name||'Дауыстық хабар';st.reTop=false;render();
   teacher(`Тамаша! <b>${r.count}</b> нота таптым, сенің қарқының ♩ = ${st.tempo}. Цифрлық нотасын жаздым, домбырада қайда басу керегін көрсетемін.`,
     [['▶ Домбырамен тыңда',()=>startPlay(),'primary'],['Нотаны көру',()=>$('#tab').scrollIntoView({behavior:'smooth',block:'center'})],[opt.music?'Ән/дауыс ретінде қайта тыңда':'Музыка/домбыра ретінде қайта тыңда',()=>handleAudio(null,name,null,{...opt,dec,music:!opt.music,again:true}),'']]);}
 
@@ -1057,7 +1057,7 @@ $('#mParse').onclick=()=>{const str=TUNINGS[st.tune],out=[],bad=[];
     if(!m){bad.push(tk);return;}const cnt=m[3]?+m[3]:1;if(m[1]==='-'){out.push({m:null,b:cnt/2});return;}const s='рr'.includes(m[1])?0:1,f=+(m[2]||0);if(f>MAXF){bad.push(tk);return;}out.push({m:str[s]+f,b:cnt/2,fs:s});});
   if(bad.length){$('#mMsg').textContent='Түсінбедім: '+bad.slice(0,4).join(', ');return;}mSeq=out;renderManual();};
 $('#mApply').onclick=()=>{if(!mSeq.some(n=>n.m!=null)){$('#mMsg').textContent='Алдымен нота енгіз.';return;}closeSheet();stopPlay();
-  undoSnap={melody:st.melody.map(n=>({...n})),shift:st.shift};st.melody=mSeq.map(n=>({...n}));st.shift=0;st.sel=-1;st.source='Қолмен енгізілген';invalidate();render();
+  undoSnap={melody:st.melody.map(n=>({...n})),shift:st.shift};st.melody=mSeq.map(n=>({...n}));st.shift=0;st.sel=-1;st.reTop=false;st.source='Қолмен енгізілген';invalidate();render();
   teacher(`Қолмен енгізілген ${st.melody.filter(n=>n.m!=null).length} нотаны жаздым.`,[['▶ Тыңдау',()=>startPlay(),'primary'],['Болдырмау',()=>{if(!undoSnap)return;stopPlay();st.melody=undoSnap.melody;st.shift=undoSnap.shift;undoSnap=null;invalidate();render();teacher('Бұрынғы нотаны қайтардым.');}]]);
   $('#stage').scrollIntoView({behavior:'smooth',block:'center'});};
 
